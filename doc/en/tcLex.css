@@ -1,0 +1,110 @@
+/* Basic style */
+
+BODY {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #afafaf;
+  background-image: url("light_slate.jpg");
+  font-size: 10pt;
+  color: black;
+}
+
+H2 {
+  font-size: 20pt;
+}
+H3 {
+  font-size: 16pt;
+}
+H4 {
+  font-style: italic;
+  font-size: 14pt;
+  margin-left: 20px;
+}
+
+P {
+  text-indent: 1em;
+}
+
+PRE, TT {
+  font-family: Courier New, Courier, monospace;
+}
+PRE {
+  font-size: 10pt;
+  white-space: pre;
+  display: block;
+  background-color: #efefef;
+  border-width: 4px;
+  padding: 5px;
+  border-style: groove;
+  border-color: #afafaf;
+}
+
+/* Table style */
+
+TR.odd {
+  background-color: #bfbfbf;
+}
+TR.even {
+  background-color: #dfdfdf;
+}
+TR.odd TH {
+  background-color: #afafaf;
+}
+TR.even TH {
+  background-color: #cfcfcf;
+}
+
+/* Links */
+
+A:link {
+/*  color: red;*/
+  color: blue;
+}
+
+A:active {
+  color: red;
+}
+
+A:visited {
+  color: darkblue;
+}
+
+A.keyword {
+  text-decoration: none;
+  background-color: #ffd000;
+/*  color: #a00000;*/
+  color: black;
+}
+
+/* Table of Contents */
+
+BODY.toc H2 {
+  font-size: 16pt;
+}
+BODY.toc H3 {
+  font-size: 10pt;
+}
+BODY.toc H4 {
+  font-size: 10pt;
+  font-weight: normal;
+}
+
+BODY.toc A {
+  color: black;
+  text-decoration: none;
+}
+BODY.toc A:visited {
+  color: black;
+}
+
+
+/* Menu */
+
+BODY.menu A {
+  font-size: 12pt;
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+}
+BODY.menu A:visited {
+  color: black;
+}

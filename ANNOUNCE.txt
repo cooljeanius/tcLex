@@ -1,0 +1,113 @@
+I am pleased to announce the new development version of tcLex:
+
+tcLex v1.2a1: a lexical analyzer generator for Tcl
+by Frédéric BONNET (frederic.bonnet@ciril.fr)
+
+Updated 3 September 1999, 15:08
+
+The home page for this package is:
+http://www.multimania.com/fbonnet/Tcl/tcLex/index.en.htm
+
+************************************************************************
+
+WHAT'S NEW:
+
+- Adapted for Tcl8.2.
+- Modified the behavior of "lexer begin initial" so that it empties the 
+conditions stack.
+- Removed sources from the Windows distribution, becoming a binary-only 
+distribution. The .tar.gz distribution is cross-platform.
+
+See the file changes.txt for details
+
+************************************************************************
+
+INTRODUCTION
+
+tcLex is a lexer (lexical analyzer) generator extension to Tcl. It is 
+inspired by Unix and GNU lex and flex, which are "tools for generating 
+programs that perform pattern-matching on text". tcLex is very similar to 
+these programs, except it uses Tcl philosophy and syntax, whereas the others 
+use their own syntax and are used in conjunction with the C language. People 
+used to lex or flex should then feel familiar with tcLex. tcLex is a small 
+extension (the Windows compiled version is about 20kb, and the source is 
+about 150kb), because it extensively uses the Tcl library. However, the 
+current doesn't use Tcl's regexp code anymore but a patched version is now 
+included in tcLex, which makes it slightly bigger (by a few KB). tcLex 
+should work with Tcl 8.0 and later. tcLex will NEVER work with earlier 
+versions, because it uses Tcl 8.0's "object" system for performance. The 
+most interesting features are:
+
+ * cross-platform support, thanks to Tcl. Though it has been developped on
+   Windows and tested on Windows and Unix only, it should work on other 
+   platforms as long as Tcl exists on these platforms. Supported Tcl
+   platforms are Windows 95/NT, Unix (Linux, Solaris...) and Macintosh.
+   Other platforms are VMS, OS/2, NeXTStep, Amiga...
+ * unlike lex and flex, which only generate static lexers written in C and
+   intended to be compiled, tcLex dynamically generates Tcl commands that
+   can be used like other C commands or Tcl procedures from within Tcl
+   scripts or C programs.
+ * it uses Tcl regular expressions. That means you don't have to learn
+   another regexp language.
+ * it works with Tcl namespaces
+ * the generated lexer commands can be used in one pass or incrementally,
+   because they maintain state information. That way, several instances of
+   the same lexer (eg a HTML parser) can run at the same time in distinct
+   call frames and maintain distinct states (local variables...). Lexer need
+   not be specially designed in order to be used incrementally, the same
+   lexer can transparently be used in one pass or incrementally. This
+   feature is especially useful when processing text from a file or an
+   Internet socket (Web pages for example), when data is not necessarily
+   available at the beginning of the processing.
+
+
+VERSION
+
+The current tcLex version is 1.2a1. The suffix "a1" means "alpha 1", meaning 
+that this version is the first fature-incomplete release of the future 1.2, 
+extending and correcting the previous 1.1. The file changes.txt describes the 
+changes made between the first version of tcLex and the current version. 
+Although it is alpha software, it brings more bugs corrections than new ones 
+;-). In this case, alpha means that many planned features are not yet 
+implemented, and documentation may be incomplete. Most of the useful info is in 
+the file changes.txt. The file TODO.txt contains planned features that needs to 
+be implemented.
+
+
+WHERE TO GET TCLEX
+
+Home Page:
+http://www.multimania.com/fbonnet/Tcl/tcLex/index.en.htm
+
+Distribution files: 
+ - http://www.multimania.com/fbonnet/pub/tcLex12a1.zip
+  (Windows binaries for Tcl8.0.5, Tcl8.1.1 and Tcl8.2)
+
+ - http://www.multimania.com/fbonnet/pub/tcLex1.2a1.tar.gz
+  (Windows/Unix sources for Tcl8.0.5, Tcl8.1.1 and Tcl8.2)
+
+ - http://www.multimania.com/fbonnet/pub/tcLex1.2a1.patch
+  (patch file for version 1.1.4)
+
+
+SUPPORT
+
+Since 11/17/1998, tcLex has a dedicated mailing list. The Web site for this
+list is: http://www.eGroups.com/list/tclex .
+To subscribe, send a e-mail to the following address: 
+tclex-subscribe@egroups.com .
+Also, I try to answer all the mails users send me regarding tcLex.
+
+
+INSTALLATION, LICENSE, ETC.
+
+The file README.txt of the distribution contains information about the 
+installation, compilation and use of tcLex. Read it carefully. The file 
+license.txt describes the license that covers tcLex. It is very close to the 
+Tcl/Tk license.
+
+I'd appreciate that every tcLex user send me a mail so I can keep track of
+the number of users for this software, in a purely informative goal. I won't
+make any use of these other than statistic. Feel free to send any comment or
+bug report to frederic.bonnet@ciril.fr. tcLex is likely to be improved
+depending on users feedback.

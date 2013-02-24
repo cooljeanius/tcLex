@@ -1,0 +1,751 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+   <TITLE>TcLex documentation - Using tcLex</TITLE>
+
+   <META NAME="Author"      CONTENT="Frédéric BONNET">
+   <META NAME="Copyright"   CONTENT="Copyright (c) Frédéric BONNET, 1998">
+
+   <LINK REL="StyleSheet" TYPE="text/css" HREF="tcLex.css">
+</HEAD>
+<BODY>
+
+<H2>
+Using <STRONG>tcLex</STRONG>
+</H2>
+
+	<H3><A NAME="loading">
+	Loading the <STRONG>tcLex</STRONG> package
+	</A></H3>
+
+<P>
+On most systems, <STRONG>tcLex</STRONG> takes the form of a loadable library that
+contains a Tcl package. To load <STRONG>tcLex</STRONG>, just include this piece of
+code in your Tcl scripts:
+
+<BLOCKQUOTE><PRE>
+package require <STRONG>tcLex</STRONG>
+</PRE></BLOCKQUOTE>
+
+<P>
+Tcl's package managing facility also provides many useful features
+such as versionning. The current <STRONG>tcLex</STRONG> version is 1.1. The above
+line will load the <STRONG>tcLex</STRONG> package with the highest version number.
+If you want to ensure that the correct version is loaded (to avoid
+incompatibilities between versions), append the desired version number
+to the package command:
+
+<BLOCKQUOTE><PRE>
+package require <STRONG>tcLex</STRONG> <STRONG>1.1</STRONG>
+</PRE></BLOCKQUOTE>
+
+will load any package whose version number is equal to or greater than
+1.1. Adding the -exact switch tells that you want the package with the
+same version as specified:
+
+<BLOCKQUOTE><PRE>
+package require <STRONG>-exact</STRONG> tcLex 1.1
+</PRE></BLOCKQUOTE>
+
+<P>
+This option should only be used in specific cases. Packages are supposed
+to be compatible with other packages with the same major version number but
+with lower minor.
+
+<P>
+Precise version control avoids loading a package that is incompatible 
+with the desired one, and also check for the presence of this package.
+A good package command gives precious information to the user of a
+software about the packages it depends on.
+
+<P>
+If loading is successful, a new Tcl command becomes available in the
+interpreter: the <STRONG>lexer</STRONG> command. The reason why <STRONG>tcLex</STRONG> doesn't define a
+new namespace is that it creates only one new command whose name is
+unlikely to conflict with any existing one.
+
+
+	<H3><A NAME="lexer">
+	The <STRONG>lexer</STRONG> command
+	</A></H3>
+
+		<H4><A NAME="lsyn">
+		Synopsis
+		</A></H4>
+
+<BLOCKQUOTE><PRE>
+<STRONG>lexer</STRONG> <EM>option</EM> <EM>?args ... args?</EM>
+</PRE></BLOCKQUOTE>
+
+		<H4><A NAME="ldesc">
+		Description
+		</A></H4>
+
+<P>
+The <STRONG>lexer</STRONG> command creates lexical analyzers (lexers) commands. It creates a
+new command named <EM>name</EM>, which can contain namespaces delimiters (<TT>::</TT>). The
+newly created command replaces any existing one. 
+
+<P>
+<STRONG>Lexer</STRONG>'s syntax is a mixture of the Tcl commands <STRONG>proc</STRONG> and <STRONG>switch</STRONG>. Like <STRONG>proc</STRONG>,
+it creates a new Tcl command. Like <STRONG>switch</STRONG>, such defined commands are built
+around a specific control structure similar to switch blocks.
+
+
+		<H4><A NAME="lsub">
+		Subcommands & Switches
+		</A></H4>
+
+<P>
+<STRONG>Lexer</STRONG> takes a subcommand name as its first argument. This can be any of the
+following options:
+
+<UL>
+
+<LI><A NAME="create"></A><STRONG>create</STRONG>
+
+<DD>
+<BLOCKQUOTE><PRE>
+lexer <STRONG>?create?</STRONG> <EM>name</EM> <EM>?option ...?</EM> <EM>rules</EM>
+lexer <STRONG>?create?</STRONG> <EM>name</EM> <EM>?option ...?</EM> <EM>rule</EM> <EM>?rule ...?</EM>
+</PRE></BLOCKQUOTE>
+
+<P>
+The <STRONG>create</STRONG> keyword is optional for compatibility with <STRONG>tcLex</STRONG> 1.0, but its use
+is strongly encouraged as it may become mandatory in future major versions
+and it also avoids any name conflict with lexers name.
+
+<P>
+The <STRONG>create</STRONG> subcommand, as its name says, is used to create new lexers. It
+creates a new command named <EM>name</EM>, which can contain namespaces delimiters (<TT>::</TT>).
+The newly created command replaces any existing one. The return value is empty.
+On these points, <STRONG>lexer</STRONG> create resembles <STRONG>proc</STRONG>.
+
+<P>
+<STRONG>Lexer</STRONG> takes a variable number of options, each starting by '-'. Some options
+take an extra argument as value. Any of these options can be abbreviated if
+the abbreviation is non ambiguous. The following options are currently
+supported:
+</P>
+
+<DL>
+
+<DT>
+	<A NAME="-inclusiveconditions"></A><STRONG>-inclusiveconditions</STRONG> <EM>conditionsList</EM>
+<DT>
+	<A NAME="-ic"></A><STRONG>-ic</STRONG> <EM>conditionsList</EM>
+<DD>
+		This specifies a list of inclusive conditions that can be used
+		to restrict the rules' field of application.
+
+<DT><BR>
+<DT>
+	<A NAME="-exclusiveconditions"></A><STRONG>-exclusiveconditions</STRONG> <EM>conditionsList</EM>
+<DT>
+	<A NAME="-ec"></A><STRONG>-ec</STRONG> <EM>conditionsList</EM>
+<DD>
+		This specifies a list of exclusive conditions that can be used
+		to restrict the rules' field of application.
+
+<DT><BR>
+<DT>
+	<A NAME="-prescript"></A><STRONG>-prescript</STRONG> <EM>script</EM>
+<DT>
+	<A NAME="-midscript"></A><STRONG>-midscript</STRONG> <EM>script</EM>
+<DT>
+	<A NAME="-postscript"></A><STRONG>-postscript</STRONG> <EM>script</EM>
+<DD>
+		These specifies Tcl scripts that will be evaluated at the beginning
+		of the processing (for initialization), in the middle of incremental
+		processing (for returning an intermediate result), and at the end
+		of the processing (for returning a final result).
+
+<DT><BR>
+<DT>
+	<A NAME="-resultvariable"></A><STRONG>-resultvariable</STRONG> <EM>variableName</EM>
+<DD>
+		This specifies the name of a Tcl variable living in the lexer's
+		contex, holding the result of the processing if no value is returned
+		before its end.
+
+<DT><BR>
+<DT>
+	<A NAME="-args"></A><STRONG>-args</STRONG> <EM>args</EM>
+<DD>
+		This specifies the list of extra arguments that can be passed to
+		lexers. It uses the same syntax as with <STRONG>proc</STRONG>.
+
+<DT><BR>
+<DT>
+	<A NAME="-lines"></A><STRONG>-lines</STRONG>
+<DD>
+		This specifies that rule matching must be line-sensitive.
+		This has an impact on the regexp syntax. In particular, the meaning
+		of <TT>'^'</TT>, <TT>'$'</TT> and <TT>'.'</TT> is changed. By default the matching is line-insensitive.
+ 
+<DT><BR>
+<DT>
+	<A NAME="-nocase"></A><STRONG>-nocase</STRONG>
+<DD>
+		This specifies that rule matching must be case-insensitive. By
+		default the matching is case-sensitive.
+
+<DT><BR>
+<DT>
+	<A NAME="-longest"></A><STRONG>-longest</STRONG>
+<DD>
+		This specifies that rule matching should prefer longest matching rules
+		rather than first matching rule (the default).
+
+<DT><BR>
+<DT>
+	<STRONG>--</STRONG>
+<DD>
+		Marks the end of options. The arguments following this one will be
+		treated as rules.
+
+</DL>
+
+<P>
+Following the options list are the rules. They can be specified using two syntaxes
+(like switch). The first uses a separate argument for each of the rules specifiers;
+this form is convenient if substitutions are desired on some of the patterns or
+commands. The second form places all of the rules specifiers into a single argument;
+the argument must have proper list structure, with the elements of the list being the
+rules specifiers. The second form makes it easy to construct multiple rules, since
+the braces around the whole list make it unnecessary to include a backslash at the end
+of each line. Since the rules specifiers are in braces in the second form, no command
+or variable substitutions are performed on them;  this makes the behavior of the second
+form different than the first form in some cases.
+
+<BR><BR>
+
+<LI><STRONG>current</STRONG>
+
+<BLOCKQUOTE><PRE>
+lexer <STRONG>current</STRONG>
+</PRE></BLOCKQUOTE>
+
+<P>
+This returns the name of the currently active lexer. This can be used as a convenience
+from within lexers script, and is most useful when lexers are renamed or aliased.
+
+</UL>
+
+
+		<H4><A NAME="rules">
+		Rules specifiers
+		</A></H4>
+
+<P>
+Lexers are made up of rules which define the behavior of the lexer depending on its
+input. Rules are specified using the following syntax (rules specifiers):
+
+<BLOCKQUOTE>
+<EM>conditionlist</EM> <EM>regexp</EM> <EM>matchvars</EM> <EM>action</EM>
+</BLOCKQUOTE>
+
+where: 
+
+<UL>
+<LI><EM>conditionlist</EM> is a Tcl list of conditions. It can be equal to <TT>"-"</TT>, in which case it	
+	specifies that we use the same list as the previous rule (if any, else it generates
+	an error),
+
+<LI><EM>regexp</EM> is a regular expression,
+
+<LI><EM>matchvars</EM> is a list of variable names which will be filled by the matched substrings,
+ 
+<LI><EM>action</EM> is a Tcl script that is evaluated when the rule matches the input string. It can
+	be set to <TT>"-"</TT>, in which case it specifies that we use the same action as the next rule
+	(the same way <STRONG>switch</STRONG> does).
+</UL>
+
+<P>
+<EM>Conditionlist</EM> is a list of conditions during which the rule is active. Every condition must
+have been specified by either <A HREF="#-inclusiveconditions" CLASS="keyword"><STRONG>-inclusiveconditions</STRONG></A> or <A HREF="#-exclusiveconditions" CLASS="keyword"><STRONG>-exclusiveconditions</STRONG></A> switches. If not,
+it raises an error.
+
+<P>
+<EM>Regexp</EM> is a regular expression that uses the same syntax as Tcl's <STRONG>regexp</STRONG> command. It can
+contain parenthesized subexpressions that correspond to different parts of the matched
+string. If the rule matches (ie if the rexexp matches) the input string, the variables
+specified by <EM>matchvars</EM> are filled with corresponding substrings (the same way <STRONG>regexp</STRONG> does, see
+its man page).
+
+<P>
+<EM>Action</EM> is a Tcl script that is evaluated when the rule matches the input string. This script
+is evaluated in the lexer's context, the same used by <A HREF="#-prescript" CLASS="keyword"><STRONG>-(pre|mid|post)script</STRONG></A> and where the
+<EM>matchvars</EM> live.
+
+
+	<H3><A NAME="commands">
+	Created lexers commands
+	</A></H3>
+
+		<H4><A NAME="csyn">
+		Synopsis
+		</A></H4>
+
+<BLOCKQUOTE><PRE>
+<EM>lexerName</EM> <EM>option</EM> <EM>?arg arg ...?</EM>
+</PRE></BLOCKQUOTE>
+
+
+		<H4><A NAME="cdesc">
+		Description
+		</A></H4>
+
+<P>
+The <A HREF="#lexer" CLASS="keyword"><STRONG>lexer</STRONG></A> creates new lexer commands that are used like regular Tcl
+commands. These command takes in turn subcommands that perform several operations.
+
+
+		<H4><A NAME="csub">
+		Subcommands & Switches
+		</A></H4>
+
+<P>
+Option and the args determine the exact behavior of the command. The following commands are possible for lexers:
+
+<UL>
+
+<LI><A NAME="csub-eval"></A>Evaluation subcommands
+
+<P>
+These commands can be invoked from any script. They start a new processing sequence.
+</P>
+
+<DL>
+
+<DT>
+	<A NAME="eval"></A><EM>lexerName</EM> <STRONG>eval</STRONG> <EM>string</EM> <EM>?arg ... arg?</EM>
+<DD>
+		Processes the specified <EM>string</EM> and return the lexing result. If an arguments list
+		has been specified for the lexer (using <A HREF="#-args" CLASS="keyword"><STRONG>-args</STRONG></A>), they are passed after <EM>string</EM>.
+<DT><BR>
+
+<DT>
+	<A NAME="start"></A><EM>lexerName</EM> <STRONG>start</STRONG> <EM>tokenName</EM> <EM>string</EM> <EM>?arg ... arg?</EM>
+<DD>
+		Processes the maximum number of characters from <EM>string</EM>, returns the partial
+		lexing result and sets the variable <EM>tokenName</EM> to the state value used for
+		further processing with <STRONG>continue</STRONG> or <STRONG>finish</STRONG>.
+<DT><BR>
+
+<DT>
+	<A NAME="continue"></A><EM>lexerName</EM> <STRONG>continue</STRONG> <EM>token</EM> <EM>string</EM>
+<DD>
+		Continues processing started with <STRONG>start</STRONG>, <EM>token</EM> being the value returned in the
+		<EM>tokenName</EM> variable by a previous call to <STRONG>start</STRONG>. <EM>String</EM> is supposed to be larger than for
+		the previous calls to <STRONG>start</STRONG> and <STRONG>continue</STRONG>.
+<DT><BR>
+
+<DT>
+	<A NAME="finish"></A><EM>lexerName</EM> <STRONG>finish</STRONG> <EM>token</EM> <EM>string</EM>
+<DD>
+		Ends processing started with <STRONG>start</STRONG>, <EM>token</EM> being the value returned in the <EM>tokenName</EM>
+		variable by a previous call to <STRONG>start</STRONG>. Like <STRONG>eval</STRONG>, <STRONG>finish</STRONG> processes <EM>string</EM> to its end.
+<DT><BR>
+
+</DL>
+
+<LI><A NAME="csub-internal"></A>Internal subcommands
+
+<P>
+These commands can only be used during processing (when <EM>lexerName</EM> is active), else they
+raise an error.
+</P>
+
+<DL>
+
+<DT>
+	<A NAME="begin"></A><EM>lexerName</EM> <STRONG>begin</STRONG> <EM>condition</EM>
+<DD>
+		Enters the condition <EM>condition</EM>, which must be a valid condition (specified by
+		<A HREF="#-inclusiveconditions" CLASS="keyword"><STRONG>-(inclusive|exclusive)conditions</STRONG></A>).
+<DT><BR>
+
+<DT>
+	<A NAME="end"></A><EM>lexerName</EM> <STRONG>end</STRONG>
+<DD>
+		Leaves the current condition and returns to the previous.
+<DT><BR>
+
+<DT>
+	<A NAME="conditions"></A><EM>lexerName</EM> <STRONG>conditions</STRONG> <STRONG>?-current?</STRONG>
+<DD>
+		Returns the current conditions stack in the form of a Tcl list. The rightmost
+		is the current, which can also be returned if the <STRONG>-current</STRONG> switch is used.
+<DT><BR>
+
+<DT>
+	<A NAME="index"></A><EM>lexerName</EM> <STRONG>index</STRONG>
+<DD>
+		Returns the index of the currently lexed substring, ie the first character of
+		the matched substring within the input string.
+<DT><BR>
+
+<DT>
+	<A NAME="reject"></A><EM>lexerName</EM> <STRONG>reject</STRONG>
+<DD>
+		Makes this rule behave as it didn't match at all. The action is evaluated to
+		its end, and after that the lexer searches for another matching rule.
+<DT><BR>
+
+<DT>
+	<A NAME="input"></A><EM>lexerName</EM> <STRONG>input</STRONG> <EM>?nbChars?</EM>
+<DD>
+		Consumes <EM>nbChars</EM> (default to 1) characters from the input string and returns
+		them. If there are less characters remaining in the string, returns all of them
+		(returns an empty string if none remains). These characters won't be matched
+		by future rules unless they are unput.
+<DT><BR>
+
+<DT>
+	<A NAME="unput"></A><EM>lexerName</EM> <STRONG>unput</STRONG> <EM>?nbChars?</EM>
+<DD>
+		Puts <EM>nbChars</EM> (default to 1) characters back into the input string. You cannot
+		unput characters past the beginning of the matched string. These characters
+		will be made available for matching by future rules.
+<DT><BR>
+
+</DL>
+
+</UL>
+
+
+	<H3><A NAME="work">
+	How lexers work
+	</A></H3>
+
+		<H4><A NAME="basic">
+		Basic Concepts
+		</A></H4>
+
+<P>
+Lexers' main goal is to read and consume an input string, and to perform a number of
+tasks according to this input. To do so, lexers are built around a loop that globally
+performs the following jobs:
+
+<UL>
+<LI>read the input string
+<LI>try to match the input against a number of active rules, determined by the
+	  lexer's state
+<LI>once a rule matches, evaluate its action which can modify the lexer's state
+<LI>consume the matched chars and continue
+</UL>
+
+<P>
+Designing a lexer involves writing rules. Rules are made of several parts:
+
+<UL>
+<LI>a list of conditions during which the rule is active
+<LI>a regular expression that is matched against the input
+<LI>an action script that performs actions whenever the rule matches
+</UL>
+
+<P>
+Lexers regular expressions are like standard regular expressions, and are covered by
+the Tcl <STRONG>regexp</STRONG> man page.
+
+<P>
+Actions are standard Tcl scripts that can do anything, including calling the lexer's
+<A HREF="#csub-internal">subcommands</A> to query or modify its state.
+
+<P>
+Conditions are one of the key features of lexers, because they tell when a rule is
+active and can be tried. Basically, conditions are just states that lexers enter and
+leave. There can be only one active condition for a given active lexer. Thus, to be
+active, a rule must have the current condition in its active conditions list.
+
+
+		<H4><A NAME="conds">
+		Conditions
+		</A></H4>
+
+<P>
+In <STRONG>tcLex</STRONG>, the list of valid conditions must be given at lexer creation time. The
+options <A HREF="#-inclusiveconditions" CLASS="keyword"><STRONG>-inclusiveconditions</STRONG></A> (or <A HREF="#-ic" CLASS="keyword"><STRONG>-ic</STRONG></A>) and <A HREF="#-exclusiveconditions" CLASS="keyword"><STRONG>-exclusiveconditions</STRONG></A> (or <A HREF="#-ec" CLASS="keyword"><STRONG>-ec</STRONG></A>) are used
+to specify the list of inclusive or exclusive conditions that can be used by
+the lexer. In turn, every rule must specify a list of conditions during which
+they are active. Conditions are just arbitrary strings.
+
+<P>
+During processing, the current condition can change. The <A HREF="#lexer" CLASS="keyword"><STRONG>lexer</STRONG></A> subcommand <A HREF="#begin" CLASS="keyword"><STRONG>begin</STRONG></A>
+tells the lexer to enter the specified condition, whereas <A HREF="#end" CLASS="keyword"><STRONG>end</STRONG></A> tells it to leave
+the current condition and return to the previous. Conditions are managed in a
+stack structure, which can be queried using the <A HREF="#conditions" CLASS="keyword"><STRONG>conditions</STRONG></A> subcommand.
+
+<P>
+As written above, there are two kinds of conditions: inclusive and exclusive.
+At the first sight, the difference between inclusive and exclusive conditions isn't
+very obvious, and especially how and why they are used. Let's see the following example: 
+
+<BLOCKQUOTE><PRE>
+lexer lexclusive -exclusiveconditions {foo} {
+  foo {b} {char} {puts "$char matched within foo"}
+  {}  a   {char} {puts "$char matched, entering foo"; [lexer current] begin foo}
+  {}  .   {char} {puts "$char matched"}
+}
+
+lexer linclusive -inclusiveconditions {foo} {
+  foo {b} {char} {puts "$char matched within foo"}
+  {}  a   {char} {puts "$char matched, entering foo"; [lexer current] begin foo}
+  {}  .   {char} {puts "$char matched"}
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+We see that the only difference between both lexers is the condition <EM>"foo"</EM> being
+inclusive or exclusive. This slight difference in the definition can make a huge
+difference in the behavior. We can observe that if we eval both lexers with the
+same simple string: 
+
+<BLOCKQUOTE><PRE>
+% lexclusive eval abcd
+a matched, entering foo
+b matched within foo
+%
+% linclusive eval abcd
+a matched, entering foo
+b matched within foo
+c matched
+d matched
+</PRE></BLOCKQUOTE>
+
+<P>
+Here we see that the last 2 characters of the string, <TT>'c'</TT> and <TT>'d'</TT>, get matched by
+<EM>linclusive</EM> but not by <EM>lexclusive</EM>. The reason is that after character <TT>'b'</TT> has
+been matched, both lexer enter the condition <EM>"foo"</EM>, which is exclusive in <EM>lexclusive</EM>
+and inclusive in <EM>linclusive</EM>. When both lexers try to match the next characters
+<TT>'c'</TT> and <TT>'d'</TT>, <EM>lexclusive</EM> can't find an appliable rule so evals the default
+rule (which does nothing, see below <A HREF="#default">Default rule handling</A>), whereas <EM>linclusive</EM> can
+apply the rules with empty conditions list even within condition <EM>"foo"</EM>. So the
+main difference between inclusive and exclusive conditions is that inclusive
+conditions activates rule with empty conditions list.
+
+<P>
+Since inclusive and exclusive conditions yelds slightly different results, they are
+often used in specific, distinct situations. Exclusive conditions are used to write
+"sub-lexers" to apply a different set of rules to some part of the string. Inclusive
+conditions are used to override some rules in some situations while maintaining the
+overall behavior. A good example is the Tcl language itself. Tcl parsing rules are
+slightly different whether the strings are enclosed between brackets, braces or
+quotes, but many rules still apply (backslash substitution for example). These rules
+could be expressed as rules with empty conditions list that are still active within
+inclusive conditions. 
+
+
+		<H4><A NAME="processing">
+		Processing
+		</A></H4>
+
+<P>
+As stated <A HREF="#basic">before</A>, lexers are built around a main processing loop, which goal is to
+consume the whole input string. To do so, it tries to find a matching rule, and if
+it succeeds, it evals its action and consume the matched chars.
+
+<P>
+Since actions can contain arbitrary command, they can modify the lexer's
+state. Thus, this state may differ before and after the action has been evaluate.
+The lexer's state can be modified on some points:
+
+<UL>
+<LI>changing the active condition (<A HREF="#begin" CLASS="keyword"><STRONG>begin</STRONG></A> and <A HREF="#end" CLASS="keyword"><STRONG>end</STRONG></A>),
+<LI>rejecting the rule (<A HREF="#reject" CLASS="keyword"><STRONG>reject</STRONG></A>),
+<LI>acting on the input (<A HREF="#input" CLASS="keyword"><STRONG>input</STRONG></A> and <A HREF="#unput" CLASS="keyword"><STRONG>unput</STRONG></A>).
+</UL>
+
+<P>
+Changing the active is the most simple case. Rejection and input modification are
+more complex.
+
+<P>
+Any matching rule can be rejected from within its action. Rejection means that
+the lexer must behave as if the rule didn't match at all. So rejecting a rule tells
+the lexer to go on looking for a matching rule. The complexity comes from the fact
+that the rejected rule can modify the lexer's state before.
+
+<P>
+Rejection is very useful in a number of cases where normal rule handling would
+overcomplicate the lexer. Let's consider the following example:
+
+<BLOCKQUOTE><PRE>
+lexer count \
+-pre {
+  set nbLines 1
+  set nbChars 0
+} \
+-post {
+  puts "number of lines: $nbLines"
+  puts "number of chars: $nbChars"
+} {
+  {} \n {} {incr nbLines; [lexer current] reject}
+  {} .  {} {incr nbChars}
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+This simple lexer is a character and line counter for strings. At the end of the
+processing, it prints the total number of lines and characters in the input string.
+The first line is used to match and count the newline characters. The second
+counts characters. But since a newline is also a character, it must be counted as
+such. A first possibility is to add the character counting code to the line counting
+rule. But although it seems useless in this simple example, it can be very tedious
+and error-prone in more complex lexers (for instance if the character-counting rule
+is rewritten to add new features), as duplicating code should be avoided. The second
+possibility is using rejection. In this example we tell the lexer to reject the
+line-counting rule, so that it proceeds to the next matching rule which is the
+character-counting rule. That way, newline chars can be used for line counting while
+still being seen as regular characters. The real power with <A HREF="#reject" CLASS="keyword"><STRONG>reject</STRONG></A> is that it can be
+conditionally triggered and cascaded. This provides some sort of inheritance
+between rules.
+
+<P>
+The last way to act on the lexer state is acting on the input. The input string
+can't be modified (unlike with <STRONG>flex</STRONG>), but its consumption can be modified. The lexer
+subcommands <A HREF="#input" CLASS="keyword"><STRONG>input</STRONG></A> and <A HREF="#unput" CLASS="keyword"><STRONG>unput</STRONG></A> are respectively used to get extra characters from,
+and to put back consumed characters to the input. This can allow for dynamic rule
+writing where characters are not consumed by rule matching but programmatically.
+A practical use would be to write a rule that only matches the beginning of a
+sequence, and then manually inputs extra characters in order to perform conditional
+action. This can help a lot grouping many similar rules into one generic rule.
+Since such consumed characters can be put back by and rules can be rejected,
+this provide a very powerful way to write dynamic rules.
+
+
+		<H4><A NAME="default">
+		Default rule handling
+		</A></H4>
+
+<P>
+<STRONG>Flex</STRONG> defines a default rule that is evaluated when none matched. Its default behavior
+is to consume the first unmatched character and copy it to the output. <STRONG>TcLex</STRONG>
+lexers' default behavior is slightly different: it consumes one char and does nothing
+else. Literally, the default rule is:
+
+<BLOCKQUOTE><PRE>
+* . {} {}
+</PRE></BLOCKQUOTE>
+
+(or <TT>"* .|\n {} {}"</TT> when line-sensitive matching is used)
+
+<P>
+This is because lexers have no idea what the "output" can be. The result can take any
+form and its handling is not <STRONG>tcLex</STRONG>'s responsibility but the lexer writer's. You can
+override the default behavior by defining your own default rule.
+
+
+		<H4><A NAME="incremental">
+		Incremental processing
+		</A></H4>
+
+<P>
+One of the most powerful features of <STRONG>tcLex</STRONG> is incremental processing. In short, it allows
+a lexer to be interrupted and resumed depending on the availability of input data. Given
+the non-threaded, event-based nature of the Tcl language, it thus provides a very powerful
+data-driven processing scheme. Applications range from interactive user input processing
+to socket-delivered document parsing (eg. HTML).
+
+<P>
+The main strength of <STRONG>tcLex</STRONG>'s incremental processing facility is its transparency. Lexers
+need not be specially designed (except from some performance-related precautions and some specific
+limtations, see <A HREF="#bugs">Bugs and Limitations</A> below) to be
+used incrementally, processing scheme being chosen at run-time. Lexers keep state information
+between sessions, thus allowing concurrent use of several lexing processes. This state
+processing is completely transparent to users, and such lexers behave like interruptible
+procs that could keep their state alive -- local variables for example.
+
+<P>
+The key to incremental processing lies in the three dedicated lexers subcommands: <A HREF="#start" CLASS="keyword"><STRONG>start</STRONG></A>,
+<A HREF="#continue" CLASS="keyword"><STRONG>continue</STRONG></A> and <A HREF="#finish" CLASS="keyword"><STRONG>finish</STRONG></A>. A typical incremental processing session is initiated by <A HREF="#start" CLASS="keyword"><STRONG>start</STRONG></A>,
+then additional data is processed by further <A HREF="#continue" CLASS="keyword"><STRONG>continue</STRONG></A> commands, finally processing
+terminates by <A HREF="#finish" CLASS="keyword"><STRONG>finish</STRONG></A> when no more data is available. Each subcommand returns a result
+that can be partial (<A HREF="#start" CLASS="keyword"><STRONG>start</STRONG></A>, <A HREF="#continue" CLASS="keyword"><STRONG>continue</STRONG></A>) or final (<A HREF="#finish" CLASS="keyword"><STRONG>finish</STRONG></A>). <STRONG>TcLex</STRONG>'s incremental processing is
+designed so that the final result of an incremental processing session (returned by <A HREF="#finish" CLASS="keyword"><STRONG>finish</STRONG></A>)
+is the same as the result of a one-pass session (using <A HREF="#eval" CLASS="keyword"><STRONG>eval</STRONG></A> command) on the same complete
+string.
+
+<P>
+As an example is worth a thousand words, here is a typical incremental processing session:
+
+<BLOCKQUOTE><PRE>
+# create a lexer named lx
+lexer create lx ...
+
+# channel contains the name of an open Tcl channel (eg. file or socket)
+
+# first initiate the process with an empty string. We could also give
+# a non-empty string taken from the input channel.
+set input ""
+lx start token $input
+# then get strings from the channel
+while {![eof $channel]} {
+  # update the input string
+  append input "[gets $channel]\n" ;# don't forget the trailing newline
+  lx continue $token $input
+}
+# all data has been read, finish
+# result should be equal to [lx eval $input]
+set result [lx finish $token $input]
+</PRE></BLOCKQUOTE>
+
+<P>
+Every <A HREF="#start" CLASS="keyword"><STRONG>start</STRONG></A>/<A HREF="#continue" CLASS="keyword"><STRONG>continue</STRONG></A> command should return a valid partial result. This could be
+for example a partial HTML tree ready to be rendered in a web browser. These results are returned by Tcl scripts
+specified by <A HREF="#-midscript" CLASS="keyword"><STRONG>-midscript</STRONG></A>, or through a <A HREF="#-resultvariable" CLASS="keyword"><STRONG>-resultvariable</STRONG></A>-specified Tcl variable. These can be used to generate a
+well-formatted result from a partial internal result (eg. an uncomplete tree) so that
+it can be properly used by outer code.
+
+<P>
+Another example, this time chunk-oriented rather than line-oriented (using <STRONG>read</STRONG> rather than
+<STRONG>gets</STRONG>, ie reading a fixed number of chars rather than whole lines):
+
+<BLOCKQUOTE><PRE>
+# create a lexer named lx
+lexer create lx ...
+
+# channel contains the name of an open Tcl channel (eg. file or socket)
+set chunkSize 1024 ;# number of chars to read at a time
+
+# first initiate the process with an empty string. We could also give
+# a non-empty string taken from the input channel.
+set input ""
+lx start token $input
+# then get strings from the channel
+while {![eof $channel]} {
+  # update the input string
+  append input [read $channel $chunkSize]
+  lx continue $token $input
+}
+# all data has been read, finish
+# result should be equal to [lx eval $input]
+set result [lx finish $token $input]
+</PRE></BLOCKQUOTE>
+
+
+
+	<H3><A NAME="bugs">
+	Bugs and Limitations
+	</A></H3>
+
+<P>
+Using the <A HREF="#input" CLASS="keyword"><STRONG>input</STRONG></A> subcommand during incremental processing is potentially dangerous:
+<A HREF="#input" CLASS="keyword"><STRONG>input</STRONG></A> cannot return more characters than available at the time the command is
+issued. Thus, if <A HREF="#input" CLASS="keyword"><STRONG>input</STRONG></A> wants more characters than available, it will get less
+characters than during one-pass processing. This contradicts the principle that
+one-pass and incremental processing yields identical results. Correcting this
+problem would require a wholely redesigned incremental processing scheme (event-driven
+for instance, where lexers would get the input themselves rather than be manually
+called via <A HREF="#start" CLASS="keyword"><STRONG>start</STRONG></A>/<A HREF="#continue" CLASS="keyword"><STRONG>continue</STRONG></A>/<A HREF="#finish" CLASS="keyword"><STRONG>finish</STRONG></A>).
+
+<HR>
+<ADDRESS>
+Send questions, comments, requests, etc. to the author: <A HREF="mailto:frederic.bonnet@ciril.fr">Frédéric BONNET &lt;frederic.bonnet@ciril.fr&gt;</A>.
+</ADDRESS>
+
+</BODY>
+</HTML>

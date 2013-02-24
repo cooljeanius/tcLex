@@ -1,0 +1,172 @@
+# Makefile.vc
+#
+# This makefile builds tcLex.dll, a lexer generator, as a dynamically
+# loadable Tcl extension.  This makefile is suitable for use with
+# Microsoft Visual C++ 2.2+.
+#
+
+
+#
+# Project setting -- version and stuff
+#
+# PROJECT			-- name of the project. Used in the file and package names
+# PROJECT_VERSION	-- version of the project, in major.minor format
+# VERSION_DEFINE	-- symbol used in code that hold the version number
+
+PROJECT			= tcLex
+PROJECT_VERSION	= 1.2
+VERSION_DEFINE	= TCLEX_VERSION
+
+# Set NODEBUG to 0 to compile with symbols
+!IFNDEF NODEBUG
+NODEBUG	= 1
+!ENDIF
+
+
+#
+# TOOLS32 -- where to find VC++
+#
+
+TOOLS32	= c:\usr\local\development\DevStudio\VC
+
+
+#
+# Information about your version of Tcl
+#
+# Set your version of Tcl with TCL_V: 80 (default) or 81
+# Set TCL_SRC to point to a directory that has Tcl SOURCES
+# 
+
+!IFNDEF TCL_V
+TCL_V	= 80
+!ENDIF
+
+!IF "$(TCL_V)" == "82" 
+TCL_DIR		= c:\usr\local\development\tcl8.2.0
+TCL_SRC		= $(TCL_DIR)\src\tcl8.2.0
+STUBS		= 1
+!ELSEIF "$(TCL_V)" == "81" 
+TCL_DIR		= c:\usr\local\development\tcl8.1.1
+TCL_SRC		= $(TCL_DIR)\src\tcl8.1.1
+STUBS		= 1
+!ELSE
+TCL_DIR		= c:\usr\local\development\tcl8.0.5
+TCL_SRC		= $(TCL_DIR)\src\tcl8.0.5
+STUBS		= 0
+!ENDIF
+
+# For stubs-enabled extension
+!IF "$(STUBS)" == "1"
+TCL_LIB		= $(TCL_DIR)\lib\tclstub$(TCL_V).lib
+DEFSTUBS	= -DUSE_TCL_STUBS
+!ELSE
+TCL_LIB		= $(TCL_DIR)\lib\tcl$(TCL_V).lib
+DEFSTUBS	= 
+!ENDIF
+
+#
+# TMPDIR -- where to put compiled files
+#
+
+!IF "$(NODEBUG)" == "1"
+TMPDIR	= .\Release$(TCL_V)
+!ELSE
+TMPDIR	= .\Debug$(TCL_V)
+!ENDIF
+
+
+
+######################################################################
+# Do not modify below this line
+######################################################################
+
+PROJECT_DLL	= $(PROJECT)$(TCL_V).dll
+INSTALL_DIR	= $(TCL_DIR)\lib\$(PROJECT)$(PROJECT_VERSION)
+
+#
+# Visual C++ tools
+#
+
+PATH=$(TOOLS32)\bin;$(PATH)
+
+cc32		= $(TOOLS32)\bin\cl.exe
+link32		= $(TOOLS32)\bin\link.exe
+rc32		= $(TOOLS32)\bin\rc.exe
+include32	= -I$(TOOLS32)\include
+MD			= mkdir
+CP			= copy
+RM			= del
+
+INCLUDES	= $(include32) -I"$(TCL_SRC)\generic"
+DEFINES		= -nologo $(DEBUGDEFINES) -D$(VERSION_DEFINE)=\"$(PROJECT_VERSION)\" -DBUILD_$(PROJECT) $(DEFSTUBS)
+LIBS		= $(TCL_LIB)
+
+DLLOBJS = $(TMPDIR)\tcLex.obj \
+		$(TMPDIR)\tcLexRE.obj
+
+!include <ntwin32.mak>
+
+
+######################################################################
+# Compile flags
+######################################################################
+
+!IF "$(NODEBUG)" == "1"
+cdebug	= -O2 -Gs
+!ELSE
+cdebug	= -Z7 -Od -WX
+!ENDIF
+
+######################################################################
+# Link flags
+######################################################################
+
+!IF "$(NODEBUG)" == "1"
+ldebug	= /RELEASE
+!ELSE
+ldebug	= -debug:full -debugtype:cv
+!ENDIF
+
+######################################################################
+# Targets
+######################################################################
+
+all: $(TMPDIR) $(TMPDIR)\$(PROJECT_DLL)
+
+$(TMPDIR):
+	$(MD) $(TMPDIR)
+
+$(TMPDIR)\$(PROJECT_DLL): $(DLLOBJS)
+	$(link32) $(ldebug) $(dlllflags) $(LIBS) \
+		$(guilibsdll) -out:$(TMPDIR)\$(PROJECT_DLL) $(DLLOBJS)
+
+install: all
+	$(MD) $(INSTALL_DIR)
+	$(CP) $(TMPDIR)\$(PROJECT_DLL) $(INSTALL_DIR)
+	$(CP) pkgIndex.tcl.win $(INSTALL_DIR)\pkgIndex.tcl
+
+######################################################################
+# Dependencies
+######################################################################
+
+tcLex.c: tcLex.h tcLexInt.h tcLexRE.h
+!IF "$(TCL_V)" == "82"
+tcLexRE.c: tcLex.h tcLexRE.h RE82.c
+!ELSEIF "$(TCL_V)" == "81"
+tcLexRE.c: tcLex.h tcLexRE.h RE81.c
+!ELSE
+tcLexRE.c: tcLex.h tcLexRE.h RE80.c
+!ENDIF
+
+
+# Implicit Targets
+
+.c{$(TMPDIR)}.obj:
+	$(cc32) $(cdebug) $(cflags) $(cvarsdll) $(INCLUDES) \
+		$(DEFINES) -Fo$(TMPDIR)\ $<
+
+clean:
+	-$(RM) $(TMPDIR)\*.obj
+	-$(RM) $(TMPDIR)\$(PROJECT_DLL)
+	-$(RM) $(TMPDIR)\$(PROJECT)$(TCL_V).lib
+	-$(RM) $(TMPDIR)\$(PROJECT)$(TCL_V).exp

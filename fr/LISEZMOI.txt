@@ -1,0 +1,239 @@
+**************************************************
+tcLex : un générateur d'analyseur lexical pour Tcl
+**************************************************
+
+INTRODUCTION
+
+tcLex est une extension Tcl servant à générer des lexeurs (analyseur lexical). 
+Elle est inspirée des commandes Unix et GNU lex et flex, qui sont des "outils 
+pour générer des programmes effectuant des 'pattern-matching' sur du texte". 
+tcLex est très similaire à ces programmes, à part qu'elle utilise la philosophie 
+et la syntaxe de Tcl, tandis que les autres utilisent leur propre syntaxe et 
+sont utilisés en conjonction avec le langage C. Les personnes habituées à lex ou 
+flex devraient donc se sentir familier avec tcLex. tcLex est une petite 
+extension (la version compilée pour Windows fait environ 20ko, et le source 
+environ 150ko), parce qu'il utilise au maximum la bibliothèque Tcl. Cependant, 
+la présente n'utilise plus le code de regexp de Tcl, mais une version modifiée 
+est maintenant incluse dans tcLex, ce qui la rend légèrement plus grosse (de 
+quelques ko). tcLex devrait fonctionner avec Tcl 8.0 et ultérieurs. tcLex ne 
+marchera JAMAIS avec des versions plus anciennes, parce qu'elle utilise le 
+nouveau système d'"objets" de Tcl 8.0 pour des raisons de performance. Les 
+caractéristiques les plus intéressantes sont :
+
+ * support multi-plateforme, grâce à Tcl. Bien qu'elle ait été développée sur
+   Windows et testée sur Windows et Unix, elle devrait fonctionner sur d'autres 
+   plateformes si une version de Tcl existe sur celles-ci. Les plateformes 
+   supportées par Tcl sont Windows 95/NT, Unix (Linux, Solaris...) et Macintosh. 
+   D'autres plateformes sont VMS, OS/2, NeXTStep, Amiga...
+ * contrairement à lex et flex, qui génèrent uniquement des lexeurs statiques
+   écrits en C et destinés à être compilés, tcLex génère dynamiquement des 
+   commandes Tcl qui peuvent être utilisées comme d'autes commandes C ou des 
+   procédures Tcl à partir de scripts Tcl ou de programmes C.
+ * elle utilise les expressions régulières de Tcl. Ce qui signifie que vous
+   n'avez pas à apprendre un nouveau langage de regexp.
+ * elle fonctionne avec les "namespaces" de Tcl
+ * les commandes générées peuvent être utilisées en une passe ou
+   incrémentallement, car elles maintiennent des informations d'état. Ainsi, 
+   plusieurs instances du même lexeur (par exemple un parseur HTML) peuvent 
+   tourner simultanément dans des contextes distincts et maintenir des états 
+   également distincts (variables locales...). Les lexeurs n'ont pas besoin 
+   d'être spécialement conçus pour être utilisés incrémentallement, le même 
+   lexeur peut être utilisé en une passe ou incrémentallement de façon 
+   transparente. Cette caractéristique est particulièrement utile lors du 
+   traitement de texte issu d'un fichier ou d'une socket Internet (pages Web par 
+   exemple), quand les données ne sont pas nécessairement disponibles au début 
+   du traitement.
+
+
+VERSION
+
+La version actuelle de tcLex est 1.2a1. Le suffixe "a1" signifie "alpha 1", ce 
+qui veut dire que cette version est une version incomplète par rapport aux 
+fonctions de la future 1.2, qui étend et corrige la précédente. Le fichier 
+changements.txt décrit les changements effectués entre la première version de 
+tcLex et la version actuelle. Bien que ce soit une version alpha, elle apporte 
+plus de corrections de bugs que de nouveaux ;-). Dans ce cas, alpha signifie que 
+de nombreuses fonctions prévues ne sont pas encore implémentées, et la 
+documentation peut être incomplête. La plupart des informations utiles sont dans 
+le fichier changements.txt. Le fichier AFAIRE.txt contiens les fonctions prévues 
+qui ne sont pas encore implémentées.
+
+
+POURQUOI TCLEX ?
+
+Quand j'ai décidé d'écrire tcLex, j'avais besoin d'une façon efficace de parser 
+des fichiers HTML et CSS, dans le but de construire un navigateur Web (un de mes 
+projets à long terme). J'essayais dans ce but d'utiliser les commandes intégrées 
+de Tcl (regexp, regsub...). Bien qu'un parseur HTML basique fut assez simple à 
+écrire, les limites de l'approche classique commencèrent à apparaitre avec CSS.
+J'avais besoin de limiter le champ d'action des commandes regexp/regsub à des 
+zones spécifiques du texte parsé, selon certaines règles lexicales.
+Par exemple, la manière classique de transformer un fichier HTML en liste Tcl 
+(pour un traitement plus aisé) est de remplacer (avec "regsub") les séparateurs 
+de balises HTML (<>) avec des délimiteurs de liste Tcl (méthode inaugurée par 
+Stephen Uhler dans sa html_lib), ou par des crochets pour une évaluation 
+ultérieure avec "subst" ou "eval". Les problèmes commencent à apparaitre quand 
+les séparateurs HTML sont utilisés dans les chaines de caractères pour les 
+valeurs d'attributs (par exemple, "<IMG ALT='=> home'>"), dans ce cas cette 
+méthode ne marche pas et la liste générée est invalide. De plus, parser des 
+fichiers malformés échouera certainement et génèrera une erreur. A part cela, 
+les performances ne sont pas garanties, et perticulièrement si vous voulez 
+respecter les standards et gérer tous les cas d'erreurs, et aussi parce que 
+plusieurs passes sont nécessaires.
+J'ai ensuite envisagé d'écrire des extension spécifiques en C pour parser ces 
+fichiers, en utilisant des lexeurs écrits avec lex ou flex, mais le problème est 
+qu'on a besoin d'une extension par type de fichier. De plus, ces parseurs sont 
+statiques et non extensibles, même si leur base est la même.
+J'ai enfin décidé d'écrire une extension Tcl permettant d'écrire des lexeurs. 
+Elle essaye d'abord de suivre la philosophie et la syntaxe de (f)lex tout en les 
+adaptant à Tcl. Elle utilise ensuite la syntaxe de ligne de commande et les 
+expressions régulières de Tcl, et des scripts Tcl à la place de code C. Elle 
+crée également des commandes Tcl dynamiques au lieu de fichiers C destinés à 
+être compilés. L'idée derrière cela est d'écrire un "lexeur générique" qui 
+serait scriptable et extensible avec Tcl. Ainsi, seule une extension est requise 
+quelle que soit le type de données texte.
+
+
+OU OBTENIR TCLEX
+
+Page d'accueil :
+http://www.multimania.com/fbonnet/Tcl/tcLex/index.htm
+
+Fichiers de distribution :
+ - http://www.multimania.com/fbonnet/pub/tcLex12a1.zip
+  (binaires Windows pour Tcl8.0.5, Tcl8.1.1 et Tcl8.2)
+
+ - http://www.multimania.com/fbonnet/pub/tcLex1.2a1.tar.gz
+  (sources Windows/Unix pour Tcl8.0.5, Tcl8.1.1 et Tcl8.2)
+
+ - http://www.multimania.com/fbonnet/pub/tcLex1.2a1.patch
+  (fichier correctif pour la version 1.1.4)
+
+
+SUPPORT
+
+Depuis le 17/11/1998, tcLex dispose d'une liste de diffusion dédiée. Le site Web 
+de cette liste est : http://www.eGroups.com/list/tclex .
+Pour souscrire a cette liste, envoyez un e-mail à l'adresse suivante : 
+tclex-subscribe@egroups.com .
+J'essaie également de répondre à tous les messages que les utilisateurs 
+m'envoient concernant tcLex.
+
+
+COMPILER L'EXTENSION
+
+Si vous voulez compiler tcLex vous-même, vous devez savoir qu'elle a besoin des 
+sources Tcl pour compiler car elle utilise quelques structures internes. Elle 
+peut être compilée avec Tcl 8.0, 8.1 ou 8.2.
+
+* Windows:
+Des bibliothèques précompilées sont disponibles dans une distribution binaire 
+distincte. Cependant, vous pouvez compiler l'extension vous-même. Allez dans le 
+répertoire "src", éditez le fichier "makefile.vc" pour Microsoft Visual C++ (pas 
+de Borland  pour l'instant, des volontaires :-) et éditez les différentes 
+variables pour refléter votre propre installation (compilateur, Tcl...). 
+
+Ensuite, tapez sur la ligne de commande :
+
+	nmake -f makefile.vc
+
+Une fois la compilation réussie, tapez :
+
+	nmake -f makefile.vc install
+
+Et il copiera les fichiers requis dans un sous-répertoire du répertoire "lib" de 
+Tcl, afin qu'elle puisse être utilisée avec "package require tcLex".
+
+
+* Unix:
+(Merci à John Ellson <ellson@lucent.com> pour ces fichiers et instructions)
+Pour compiler tcLex sur des systèmes Unix, tapez:
+
+      cd src
+      chmod u+x configure
+	chmod u+x install-sh
+      ./configure
+      make 
+      make install
+
+Le script de configuration tentera de déduire une variable $PREFIX d'une 
+installation existante de Tcl. Vous pouvez toujours utiliser l'option 
+--prefix=... si tclsh n'est pas dans votre $PATH, ou si différents tclsh sont 
+installés.
+
+Le Makefile généré utilise le fichier $PREFIX/lib/tclConfig.sh laissé par la 
+compilation de Tcl pour la plupart de ses paramètres de configuration.
+
+Le Makefile généré crée un fichier a pkgIndex.tcl compatible avec Tcl7.6 et 
+ultérieurs.
+
+
+* MacOS:
+Il n'y a pas de makefile pour cette plateforme pour l'instant, cependant la 
+compilation devrait être facile, il n'y a que deux fichiers C. Les seules choses
+dont le source a besoin sont les variables TCLEX_VERSION, BUILD_tcLex et 
+USE_TCL_STUBS (si applicable) définies à la compilation. Vous pouvez jeter un 
+oeil au makefile pour Windows.
+
+
+INSTALLATION DES BINAIRES
+
+Windows:
+Trois bibliothèques précompilées sont fournies avec la distribution binaire, 
+nommés tcLex80.dll, tcLex81.dll et tcLex82.dll, respectivement pour Tcl 8.0, 8.1 
+et 8.2. Copiez-les simplement avec le fichier pkgIndex.tcl dans un 
+sous-répertoire de votre choix dans le répertoire "lib" de Tcl.
+
+MacOS, Unix:
+Pas de distribution binaire pour l'instant.
+
+
+DOCUMENTATION
+
+Le répertoire doc contient la documentation de tcLex dans des fichiers HTML. La 
+documentation est disponible en anglais (sous-rép en) et français (sous-rép fr). 
+Lisez-la attentivement.
+
+
+CONTACT, COMMENTAIRES, BUGS, etc.
+
+* Veuillez s'il vous plait lire la license (fichier license.txt, en anglais 
+  uniquement), et spécialement la "beerware clause" ;-) traduite ici :
+
+" Ce logiciel est freeware. Cependant, il fait également partie de la catégorie 
+spéciale "beerware". C'est-à-dire que si vous trouvez ce logiciel utile, ou que 
+vous l'utilisez tous les jours, ou voulez me remercier pour ma modeste condition 
+à la communauté Tcl, vous pouvez m'envoyer une bière d'une vos brasseries 
+locales. Ma préférence va aux bières d'abbaye de Belgique, à la cerveza 
+mexicaine Corona, et à la stout irlandaise (Guiness for strength!), mais 
+j'apprécie aussi les bières exotiques, rares ou originales d'un peu partout 
+(note : je vis en France), et particulièrement celles avec un emballage ou un 
+goût originaux. "
+
+* Veuillez envoyer les bugs ou vos commentaires à <frederic.bonnet@ciril.fr>.
+  Les rapports de bugs et le retour utilisateur sont les seules façons que 
+  j'envisage pour améliorer et corriger tcLex. Si personne n'utilise tcLex je ne 
+  vois aucune raison pourquoi je devrais améliorer cette extension sauf pour mon 
+  usage personnel (pour lequel tcLex est plus qu'adéquat pour le moment)
+* Même si vous n'avez aucun commentaire, j'apprécierais que chaque utilisateur
+  de tcLex m'envoie un mail à l'adresse mentionnée ci-dessus. Cela me donne des 
+  informations sur le nombre d'utilisateurs qui est une part importante de ma 
+  motivation. Je n'utiliserai pas votre adresse pour vous envoyer des messages 
+  non sollicités, du spam, ou la vendre à des "télémarquetteurs", mais 
+  uniquement pour garder une trace des utilisateurs.
+* Si vous trouvez un bug, un court script Tcl qui le met en évidence serait très
+  utile, ou encore mieux, compilez avec debugging et spécifiez où il a planté 
+  dans ce script Tcl.
+
+
+POUR CONTRIBUER
+
+Comme j'utilise uniquement MS Visual C++ sous Windows, j'apprécierai des 
+contributions de gens fournissant des makefiles pour d'autres compilateurs, des 
+fichiers GNU autoconf, ou mieux, des extensions compilée pour des distributions 
+binaires sur Macintosh et Unix (particulièrement Linux et Solaris).
+
+J'aimerai aussi réunir tous les lexeurs faits avec tcLex en un seul endroit (une 
+page Web par exemple) comme une ressource de valeur pour la communauté Tcl. Des 
+contributions intéressantes seraient par exemple des parseurs pour HTML, XML, 
+CSS, JavaScript et d'autres langages du Web.

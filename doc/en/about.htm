@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+   <TITLE>TcLex documentation - About tcLex</TITLE>
+
+   <META NAME="Author"      CONTENT="Frédéric BONNET">
+   <META NAME="Copyright"   CONTENT="Copyright (c) Frédéric BONNET, 1998">
+   <META NAME="Description" CONTENT="TcLex is a lexer (lexical analyzer) generator extension to Tcl">
+   <META NAME="Keywords"    CONTENT="text processing, lexical analyzer, parser, pattern matching, regular expression">
+
+   <LINK REL="StyleSheet" TYPE="text/css" HREF="tcLex.css">
+</HEAD>
+<BODY>
+
+<H2>
+About <STRONG>tcLex</STRONG>
+</H2>
+
+	<H3><A NAME="intro">
+	Introduction
+	</A></H3>
+
+<P>
+<STRONG>TcLex</STRONG> is a lexer (lexical analyzer) generator extension to Tcl. It is
+inspired by Unix and GNU <STRONG>lex</STRONG> and <STRONG>flex</STRONG>, which are "tools for generating
+programs that perform pattern-matching on text". <STRONG>TcLex</STRONG> is very
+similar to these programs, except it uses Tcl philosophy and syntax,
+whereas the others use their own syntax and are used in conjunction
+with the C language. People used to <STRONG>lex</STRONG> or <STRONG>flex</STRONG> should then feel
+familiar with <STRONG>tcLex</STRONG>.
+
+<P>
+<STRONG>TcLex</STRONG> is a small extension (the Windows compiled version is about
+20kb, and the source is about 150kb), because it extensively uses the
+Tcl library. However, the current doesn't use Tcl's regexp code anymore
+but a patched version is now included in <STRONG>tcLex</STRONG>, which makes it slightly
+bigger (by a few KB).
+
+<P>
+<STRONG>TcLex</STRONG> should work with Tcl 8.0 and later. <STRONG>TcLex</STRONG> will NEVER work with
+earlier versions, because it uses Tcl 8.0's "object" system for
+performance.
+
+<P>
+The most interesting features are:
+
+<UL>
+<LI>cross-platform support, thanks to Tcl. Though it has been developped
+   on Windows and tested on Windows and Unix only, it should work on
+   other platforms as long as Tcl exists on these platforms. Supported
+   Tcl platforms are Windows 95/NT, Unix (Linux, Solaris...) and
+   Macintosh. Other platforms are VMS, OS/2, NeXTStep, Amiga...
+<LI>unlike <STRONG>lex</STRONG> and <STRONG>flex</STRONG>, which only generate static lexers written in C
+   and intended to be compiled, <STRONG>tcLex</STRONG> dynamically generates Tcl commands
+   that can be used like other C commands or Tcl procedures from within
+   Tcl scripts or C programs.
+<LI>it uses Tcl regular expressions. That means you don't have to learn
+   another regexp language.
+<LI>it works with Tcl namespaces
+<LI>the generated lexer commands can be used in one pass or
+   incrementally, because they maintain state information. That way,
+   several instances of the same lexer (eg a HTML parser) can run at the
+   same time in distinct call frames and maintain distinct states (local
+   variables...). Lexer need not be specially designed in order to be
+   used incrementally, the same lexer can transparently be used in one
+   pass or incrementally. This feature is especially useful when
+   processing text from a file or an Internet socket (Web pages for
+   example), when data is not necessarily available at the beginning of
+   the processing.
+</UL>
+
+	<H3><A NAME="comparison">
+	Comparison with <STRONG>flex</STRONG>
+	</A></H3>
+
+<P>
+<STRONG>Flex</STRONG> is a tool for generating lexical analyzers using the C language. It
+uses its own syntax to specify rules, start conditions, regular expressions...
+Rules codes are written in C. <STRONG>Flex</STRONG> is a command-line tool that takes lexer
+definition files as input and outputs C source files.
+
+<P>
+<STRONG>TcLex</STRONG> resembles <STRONG>flex</STRONG> on many points, but its philosophy differs slightly.
+<STRONG>tcLex</STRONG> is intended to be used from within Tcl rather than as an external
+command-line tool. Rather than a specific syntax, it uses Tcl syntax to
+specify lexers constructs using regular Tcl strings, lists, and substitution
+rules. As a regular Tcl command, it can be used to generate lexers on the
+fly rather than statically generate Tcl sources. Lexers then become new
+Tcl control structures like procs and switches that can be used from any
+Tcl script.
+
+<P>
+While <STRONG>flex</STRONG> is most suited for performance-tuned lexers writing, <STRONG>tcLex</STRONG> is
+perfect for interactively exploring the power of lexers using higher level
+concepts. <STRONG>TcLex</STRONG> compares to <STRONG>flex</STRONG> the same way Tcl compares to C, and goes
+beyond by turning lexers into a new control structure, rather than keeping
+them a tool for string processing. Thanks to the many concepts shared with
+<STRONG>flex</STRONG>, <STRONG>tcLex</STRONG> can also be regarded as a tool for rapid prototyping of lexers
+intended to be converted to <STRONG>flex</STRONG>, the same way Tcl can be used for rapid 
+prototyping of applications which in turn can be partly rewritten in C for
+performance issues.
+
+
+	<H3><A NAME="philosophy">
+	Philosophy
+	</A></H3>
+
+<P>
+Contrary to <STRONG>flex</STRONG>, <STRONG>tcLex</STRONG> allows programmers to write lexers with the ease
+of use allowed by the Tcl scripting language: dynamically, interactively,
+programmatically, rather than statically. Such written lexers are immediately
+available as regular Tcl commands, and thus can be tested interactively
+from within a Tcl shell. The rather high-level nature of lexers perfectly
+suits Tcl philosophy.
+
+<P>
+<STRONG>TcLex</STRONG> was designed as a powerful mixture of Tcl commands <STRONG>regexp</STRONG>, <STRONG>switch</STRONG> and <STRONG>proc</STRONG>.
+It borrows many of its syntactical constructs to the <STRONG>switch</STRONG> command, extending
+it to introduce many concepts taken from <STRONG>flex</STRONG>. Lexers are made available to
+programmers as new Tcl commands that can be transparently used in a wide
+variety of situations, the same way <STRONG>proc</STRONG> creates new command from Tcl scripts.
+
+<HR>
+<ADDRESS>
+Send questions, comments, requests, etc. to the author: <A HREF="mailto:frederic.bonnet@ciril.fr">Frédéric BONNET &lt;frederic.bonnet@ciril.fr&gt;</A>.
+</ADDRESS>
+
+</BODY>
+</HTML>

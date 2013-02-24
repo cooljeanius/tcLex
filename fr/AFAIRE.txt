@@ -1,0 +1,46 @@
+Liste A FAIRE pour tcLex, dernière mise à jour le 20/07/1999 :
+(non triée)
+
+- Ajouter des types d'entrées variés : chaîne, variable, fichier, "channel".
+Ajouter les options correspondantes à eval et start.
+
+- Ajouter des tampons d'entrée multiples, en utilisant probablement la syntaxe
+suivante:
+
+    # crée un tampon <name>
+    # equivalent à yy_create_buffer
+    # le tampon original est appelé "initial" ou {}
+    # option pourrait être -file, -channel... string par défaut
+    <lexer> buffer create <name> ?option? <source>            
+
+    # permute vers le tampon <name>
+    # equivalent à yy_switch_to_buffer
+    <lexer> buffer switch <name>
+  
+    # demande la liste des tampons
+    <lexer> buffer list
+
+    # renvoie le tampon courant
+    <lexer> buffer ?current?
+  
+    # détruit un tampon
+    <lexer> buffer delete <name>
+
+- Ajouter la condition spéciale "eof" nécessaire avec les tampons multiples.
+
+- Ajouter l'option -append à continue et finish, pour ajouter de nouveaux
+caractères à la chaîne d'entrée courante plutôt que les remplacer.
+
+- Ajouter des fonctions d'introspection et de déboguage comme des traces
+d'actions, une commande à la info, ...
+
+- Finir d'écrire la documentation, et la traduire en français
+
+- Créer un fichier projet Metrowerks CodeWarrior Pro 4 pour Macintosh (et
+peut-être aussi pour Windows, pour du développement multi-plateforme), et 
+fournir des binaires Macintosh
+
+- Peut-être ajouter une option aux lexeurs pour désactiver la pile de conditions 
+(par exemple -nocs, pour "no conditions stack"), pour une meilleure 
+compatibilité avec (f)lex. Il n'y a pas de réel équivalent aux piles de 
+conditions dans (f)lex.

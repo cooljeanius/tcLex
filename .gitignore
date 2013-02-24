@@ -1,0 +1,8 @@
+*DS_Store*
+*.o
+*~
+*.cache
+*.log
+*/stamp-h*
+*.status
+*/config.h

@@ -1,0 +1,119 @@
+Je suis heureux d'annoncer la nouvelle version corrigée de tcLex :
+
+tcLex v1.2a1: un générateur d'analyseur lexical pour Tcl
+Par Frédéric BONNET (frederic.bonnet@ciril.fr)
+
+Mis à jour le 3 septembre 1999, 15:08
+
+La page Web dédiée à cette extension est :
+http://www.multimania.com/fbonnet/Tcl/tcLex/index.htm
+
+************************************************************************
+
+QUOI DE NEUF:
+
+- Adapté pour Tcl8.2.
+- Modifié le comportement de "lexer begin initial" pour qu'il vide la pile des 
+conditions.
+- Supprimé les sources de la distribution Windows, qui devient une distribution 
+exclusivement binaire. La distribution .tar.gz est multi-plateforme.
+
+Voir le fichier changements.txt pour les détails.
+
+************************************************************************
+
+INTRODUCTION
+
+tcLex est une extension Tcl servant à générer des lexeurs (analyseur lexical). 
+Elle est inspirée des commandes Unix et GNU lex et flex, qui sont des "outils 
+pour générer des programmes effectuant des 'pattern-matching' sur du texte". 
+tcLex est très similaire à ces programmes, à part qu'elle utilise la philosophie 
+et la syntaxe de Tcl, tandis que les autres utilisent leur propre syntaxe et 
+sont utilisés en conjonction avec le langage C. Les personnes habituées à lex ou 
+flex devraient donc se sentir familier avec tcLex. tcLex est une petite 
+extension (la version compilée pour Windows fait environ 20ko, et le source 
+environ 150ko), parce qu'il utilise au maximum la bibliothèque Tcl. Cependant, 
+la présente n'utilise plus le code de regexp de Tcl, mais une version modifiée 
+est maintenant incluse dans tcLex, ce qui la rend légèrement plus grosse (de 
+quelques ko). tcLex devrait fonctionner avec Tcl 8.0 et ultérieurs. tcLex ne 
+marchera JAMAIS avec des versions plus anciennes, parce qu'elle utilise le 
+nouveau système d'"objets" de Tcl 8.0 pour des raisons de performance. Les 
+caractéristiques les plus intéressantes sont :
+
+ * support multi-plateforme, grâce à Tcl. Bien qu'elle ait été développée sur
+   Windows et testée sur Windows et Unix, elle devrait fonctionner sur d'autres 
+   plateformes si une version de Tcl existe sur celles-ci. Les plateformes 
+   supportées par Tcl sont Windows 95/NT, Unix (Linux, Solaris...) et Macintosh. 
+   D'autres plateformes sont VMS, OS/2, NeXTStep, Amiga...
+ * contrairement à lex et flex, qui génèrent uniquement des lexeurs statiques
+   écrits en C et destinés à être compilés, tcLex génère dynamiquement des 
+   commandes Tcl qui peuvent être utilisées comme d'autes commandes C ou des 
+   procédures Tcl à partir de scripts Tcl ou de programmes C.
+ * elle utilise les expressions régulières de Tcl. Ce qui signifie que vous
+   n'avez pas à apprendre un nouveau langage de regexp.
+ * elle fonctionne avec les "namespaces" de Tcl
+ * les commandes générées peuvent être utilisées en une passe ou
+   incrémentallement, car elles maintiennent des informations d'état. Ainsi, 
+   plusieurs instances du même lexeur (par exemple un parseur HTML) peuvent 
+   tourner simultanément dans des contextes distincts et maintenir des états 
+   également distincts (variables locales...). Les lexeurs n'ont pas besoin 
+   d'être spécialement conçus pour être utilisés incrémentallement, le même 
+   lexeur peut être utilisé en une passe ou incrémentallement de façon 
+   transparente. Cette caractéristique est particulièrement utile lors du 
+   traitement de texte issu d'un fichier ou d'une socket Internet (pages Web par 
+   exemple), quand les données ne sont pas nécessairement disponibles au début 
+   du traitement.
+
+
+VERSION
+
+La version actuelle de tcLex est 1.2a1. Le suffixe "a1" signifie "alpha 1", ce 
+qui veut dire que cette version est une version incomplète par rapport aux 
+fonctions de la future 1.2, qui étend et corrige la précédente. Le fichier 
+changements.txt décrit les changements effectués entre la première version de 
+tcLex et la version actuelle. Bien que ce soit une version alpha, elle apporte 
+plus de corrections de bugs que de nouveaux ;-). Dans ce cas, alpha signifie que 
+de nombreuses fonctions prévues ne sont pas encore implémentées, et la 
+documentation peut être incomplête. La plupart des informations utiles sont dans 
+le fichier changements.txt. Le fichier AFAIRE.txt contiens les fonctions prévues 
+qui ne sont pas encore implémentées.
+
+
+OU OBTENIR TCLEX
+
+Page d'accueil :
+http://www.multimania.com/fbonnet/Tcl/tcLex/index.htm
+
+Fichiers de distribution :
+ - http://www.multimania.com/fbonnet/pub/tcLex12a1.zip
+  (binaires Windows pour Tcl8.0.5, Tcl8.1.1 et Tcl8.2)
+
+ - http://www.multimania.com/fbonnet/pub/tcLex1.2a1.tar.gz
+  (sources Windows/Unix pour Tcl8.0.5, Tcl8.1.1 et Tcl8.2)
+
+ - http://www.multimania.com/fbonnet/pub/tcLex1.2a1.patch
+  (fichier correctif pour la version 1.1.4)
+
+
+SUPPORT
+
+Depuis le 17/11/1998, tcLex dispose d'une liste de diffusion dédiée. Le site 
+Web de cette liste est : http://www.eGroups.com/list/tclex .
+Pour souscrire a cette liste, envoyez un e-mail à l'adresse suivante : 
+tclex-subscribe@egroups.com .
+J'essaie également de répondre à tous les messages que les utilisateurs 
+m'envoient concernant tcLex.
+
+
+INSTALLATION, LICENSE, ETC.
+
+Le fichier LISEZMOI.txt de la distribution contient des informations importantes 
+sur l'installation, la compilation et l'utilisation de tcLex. Lisez-le bien 
+attentivement. Le fichier license.txt (en anglais uniquement) décrit la license 
+qui couvre tcLex. Elle est très proche de celle de Tcl/Tk.
+
+J'aprécierai que chaque utilisateur de tcLex m'envoie un mail afin que je puisse 
+comptabiliser le nombre d'utilisateurs de ce logiciel, dans un but purement 
+informatif. Je n'en ferai aucun usage autre que statistique. N'hésitez par à 
+envoyer des commentaires ou signaler des bugs à frederic.bonnet@ciril.fr. tcLex 
+est succeptible d'être amélioré en fonction des remarques des utilisateurs.

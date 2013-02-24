@@ -1,0 +1,274 @@
+Last updated: 07/20/1999, 11:04
+
+-------- 08/01/1998 tcLex version 1.0 --------
+
+
+-------- 09/02/1998 tcLex version 1.0p1 --------
+
+1. Corrected potential bug when a global lexer was created from within a 
+namespace. For example:
+
+	namespace eval foo {
+	  lexer ::bar::baz ...
+	}
+
+The created commmand was ::foo::bar::baz instead of ::bar::baz. Also, the return 
+value is now the fully qualified name (like with proc) and not the specified 
+name (namespace-relative).
+
+2. Corrected major bug with incremental processing. When used with rule 
+rejection, some rules were incorrectly bypassed. This correction is also a 
+performance enhancement for incremental processing.
+
+3. Minor typos corrected in the man page: the example demonstrating the 
+difference between inclusive and exclusive conditions was incorrect.
+
+4. Corrected syntax error in the default pkgIndex.tcl file provided with the 
+previous version. This file didn't work due to extra curly braces :(. Hopefully 
+doing "pkg_mkIndex" worked.
+
+5. Added configure files for Unix, many thanks to John Ellson of Lucent 
+<ellson@lucent.com> for these files!
+
+6. Changed "static const char*" to "static char*" in some places to avoid 
+compiler warnings on Unix. Thanks to John Ellson <ellson@lucent.com> and Paul 
+Vogel <vogel@cygnet.rsn.hp.com> for pointing that out.
+
+7. Added .txt extension to all text files in the distrib. This makes them easier 
+to read them under Windows.
+
+8. Added the current file (changes.txt)
+
+
+-------- 11/11/1998 tcLex version 1.1a1 --------
+
+1. Completely rewrote the regexp interface. A patched version of Tcl's regexp 
+package is now included in the code. Although it makes the code a bit bigger 
+(the binay is a few KB more), it allows for better handling of string overrun 
+cases, which was a major limitation in previous versions. Also allows 
+newline-sensitive regexps in Tcl8.0 (see below). Added files tcLexRE.h and 
+tcLexRE.c -- which in turn includes RE80.c or RE81.c (modified regexp engines) 
+depending on the Tcl version number.
+
+2. Completely reworked the string handling code, so it is Unicode-clean now 
+under Tcl8.1. Now it stores the Unicode string instead of UTF-8, so that using 
+string indices is easier (UTF-8 uses variable-byte chars and thus needs special 
+parsing procedures). Also brings significant performance enhancement with big 
+strings (previously, the whole UTF-8 string was converted to Unicode by the 
+regexp package every time a rule was tried).
+
+3. Corrected bug with index under Tcl8.1 (the correction is related to the above 
+changes). The returned index was the byte index and not the character index.
+
+4. Renamed tcLexPrivate.h to tcLexInt.h for more consistency with Tcl.
+
+5. Added -args option to allow extra arguments passing, using the same syntax as 
+proc. For example:
+
+	lexer foo -args {a b {c 3}} ...
+	foo eval $string 1 2; # a=1, b=2, c defaults to 3
+
+6. Added -lines flag for line-sensitive processing. This changes the behavior of 
+"^$" and "." in regexps, and provides a portable way to use line-sensitive 
+regexps (Tcl8.0 doesn't support them, and Tcl8.1 requires special syntax). This 
+has been implemented thanks to the inclusion of the regexp code.
+
+7. Added a TcLex_Buffer structure to allow future improvements: different types 
+of inputs (string, variable, file, channel) as well as multiple input buffers.
+
+8. Reorganized the code to make future improvements easier to implement.
+
+9. The return value to "lexer" is now an empty string, like with proc (contrary 
+to what I previous wrote)
+
+10. Fixed bug due to overzealous memory deallocation, thanks to Claude BARRAS 
+<barras@etca.fr>.
+
+11. Added "input" and "unput" subcommands, following the suggestions of Neil 
+Walker <neil.walker@mrc-bsu.cam.ac.uk>. They are similar to flex's input() and 
+unput() functions, except that unput can't put arbitrary chars back into the 
+input string (this is a design choice, not a technical limiation).
+
+
+-------- 11/19/1998 tcLex version 1.1a2 --------
+
+1. Added -nocase flag for case-insensitivity. Under Tcl8.0, it needed further 
+incursion into the regexp code.
+
+2. Added -longest flag to chose longest matching rule (as flex) instead of first 
+matching rule (the default).
+
+3. Reworked the rule rejection code so that it works correctly and efficiently 
+with -longest. It also made it safer.
+
+
+-------- 11/25/1998 tcLex version 1.1a3 --------
+
+1. Corrected major bug in the modified Tcl8.0 regexp engine, which caused some 
+regexps to fail (especially those with ?-marked subexpressions). For instance, 
+the expression "a?b" matched the string "b", but not the string "ab".
+
+2. Added "create" and "current" subcommands to the lexer command. The first is 
+optional and is used when creating lexers:
+
+	lexer ?create? <name> ?args ... args?
+
+The second can be used during a processing to get the name of the currently 
+active lexer, for example:
+
+	[lexer current] index
+
+This avoids using the name of the lexer everywhere, and is useful when lexers 
+are renamed, aliased or imported. Suggestion made by Leo Schubert 
+<leo@bj-ig.de>. These new subcommands introduce a potential incompatibility: 
+lexers cannot be named "create" or "current" anymore (but this shouldn't be a 
+problem).
+
+
+-------- 12/18/1998 tcLex version 1.1b1 --------
+
+1. TcLex is now intended to be linked against Tcl8.0.4 or Tcl8.1b1. Some changes 
+have been made in the source files to take the new import directives into 
+account when building Windows DLLs (introduced in Tcl8.0.3).
+
+2. Slighly modified the Windows makefile.vc to build the object files into 
+distinct directories depending on some settings (debug, Tcl version).
+
+3. File RE81.c is now based on the regexp source from Tcl8.1b1.
+
+4. Completely rewrote the documentation. This now includes a comparison with 
+flex, as well as a classical man page. It uses HTML + CSS so that newer browsers 
+can display enhanced presentation while still allowing text-based browsers to 
+display properly formatted text.
+
+5. Added several examples, some from Neil Walker (thanks, Neil!), some from me 
+(Frédéric BONNET).
+
+
+-------- 01/11/1999 tcLex version 1.1b2 --------
+
+1. Added SafeTcl entry point (Tclex_SafeInit).
+
+2. Corrected bug that seemed to occur only on some Unix systems (eg. SGI and 
+Solaris) but potentially affected others as well. This caused some lexers to be 
+incorrectly reported as inactive even when returned by [lexer current]. The 
+source of a bug was a missing lower bound in the lexer state deallocator 
+(StateDelete) that caused subsequent states to be given a negative index, 
+causing the "inactive lexer" error. Bug reported by Claude BARRAS and Neil 
+Walker.
+
+3. Corrected bug in the modified Tcl8.0 regexp engine that caused newlines to be 
+treated as any characters even in line-sensitive mode, when used with * or +. 
+Bug reported by Neil Walker.
+
+4. Improved handling of ^$ in line-sensitive mode under Tcl8.0 so that they 
+behave the same as under Tcl8.1.
+
+5. Corrected bug with empty string match handling: some actions were called 
+twice, once for the matched string and once for an empty string at the end of 
+the previous one.
+
+6. Fixed Unix warnings previously reported by Claude BARRAS but forgotten in the 
+previous version: the struct regexec_state in RE80.c (modified Tcl8.0 regexp 
+engine) was used before defined. This warning was silent under Windows (too low 
+warning level?).
+
+
+-------- 04/04/1999 tcLex version 1.1 final --------
+
+1. Corrected minor typo in RE80.c: in function findChar, parameter c was 
+declared as int* instead of int. This had no influence (it got cast to a char 
+anyway) but generated warnings with some compilers (not mine unfortunately )-: 
+Reported by Volker Hetzer <hetzer.abg@sni.de>.
+
+2. TcLex is now intended to be linked against Tcl8.0.4 (or higher patchlevel) or 
+Tcl8.1b2. On the latter, tcLex is configured by default to use the new stubs 
+facility. Only minor code modifications were needed. Tcl8.1b1 isn't supported 
+anymore.
+
+3. Removed compatibility macros from tcLexInt.h now that the old functions are 
+back in Tcl8.1b2.
+
+4. Fixed major bug occuring with longest-prefered matching lexers. When several 
+rules matched the same number of characters, the last defined rule was chosen 
+instead of the first one, due to a bad comparison operator ('<' was used instead 
+of '<=' in RuleTry). This broke the "pascal" example.
+
+5. Reformatted the code so that it uses 4 spaces indentations instead of 2, to 
+better conform with Tcl C coding conventions. This is rather cosmetic but makes 
+the code a bit more readable.
+
+
+-------- 04/30/1999 tcLex version 1.1.1 --------
+
+1. TcLex is now intended to be linked against Tcl8.0.4 (or higher patchlevel) or 
+Tcl8.1b3. Tcl8.1b2 isn't supported anymore.
+
+2. Removed redefinition of TclUtfToUniCharDString and TclUniCharToUtfDString 
+that were needed by stub-enabled Tcl8.1b2, now that Tcl_UtfToUniCharDString and 
+Tcl_UniCharToUtfDString are publicly available in Tcl8.1b3.
+
+3. Removed the hack needed by TclRegCompObj not being exported by stub-enabled 
+Tcl8.1b2. Tcl8.1b3 now exports the public Tcl_GetRegExpFromObj which does the 
+same thing.
+
+4. Fixed regexp inconsistency between Tcl8.0 and Tcl8.1 with line-sensitive 
+matching. Regexps with negated ranges (eg. [^a]) could span multiple lines under 
+Tcl8.0 but couldn't under Tcl8.1 (the right behavior).
+
+5. Cleaned up the modified regexp exec code and proposed it as a patch to the 
+Tcl core.
+
+6. Rewrote arguments parsing code using Tcl_GetIndexFromObj to use symbolic 
+constants rather than integer indices.
+
+7. Added links to Neil Walker's tcLex page (thanks Neil!) from the doc.
+
+
+-------- 04/25/1999 tcLex version 1.1.2 --------
+
+1. Corrected bug in line-sensitive matching. This bug was introduced by the 
+above change #4, and was located in the negated range processing code in certain 
+cases.
+
+
+-------- 06/24/1999 tcLex version 1.1.3 --------
+
+1. Corrected major bug with Tcl 8.1.1. The new regexp caching scheme introduced 
+by Tcl 8.1.1 conflicted with the way tcLex stored compiled regexps. The regexp 
+handling code has been completely reworked. Bug reported by Claude BARRAS.
+
+2. Added URL to Scriptics' regexp-HOWTO in the doc 
+(http://www.scriptics.com/support/howto/regexp81.html).
+
+
+-------- 07/20/1999 tcLex version 1.1.4 --------
+
+1. Corrected major bug  with Tcl 8.1. The functions BufferNotStarving()
+and BufferAtEnd() mixed character and byte indices. which resulted in string
+overflows. Bug reported by Neil Walker. It is surprising that this bug did not
+show up earlier because the string overflows occured eventually in virtually
+any case, however it only crashed tcLex in very precise cases (hard to
+reproduce on Windows).
+
+
+-------- 09/03/1999 tcLex version 1.2a1 --------
+
+1. Added support for Tcl8.2 and higher. Now that Tcl8.2's regexp engine provides 
+the features needed by tcLex (ie string overrun detection and matching at the 
+beginning of the string), tcLex no longer needs a patched version of this 
+engine. This makes the code much simpler as it now uses standard Tcl library 
+functions. Added file RE82.c
+
+2. The input string is now stored as a Tcl_Obj instead of a Tcl_DString. 
+Reworked the related code in consequence (RuleTry(), RuleExec(), 
+RuleGetRange()). Under Tcl8.0, use the obj's 8bits string. Under Tcl8.2, use the 
+obj's Unicode (not UTF-8) string (actually, only pass the string obj to the Tcl 
+library procs, which in turn use the obj's Unicode representation). Under 
+Tcl8.1, added a Unicode object type and related procs (eg. Tcl_NewUnicodeObj(), 
+Tcl_GetUnicode() and Tcl_GetCharLength()) to be source compatible with Tcl8.2. 
+These new Unicode objects use Unicode Tcl_DStrings as their internal rep.
+
+3. Modified "lexer begin initial" behavior so that it empties the conditions 
+stack rather than pushing the "initial" condition on top of it. This makes some 
+lexers easier to write (eg. Neil Walker's flex examples).

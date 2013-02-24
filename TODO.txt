@@ -1,0 +1,44 @@
+TODO list for tcLex, last updated 07/20/1999:
+(unsorted)
+
+- Add various input types: string, variable, file, channel. Add 
+corresponding switches to eval and start.
+
+- Add multiple input buffers, possibly using the following syntax:
+
+    # create a buffer <name>
+    # equivalent to yy_create_buffer
+    # original buffer is named "initial" or {}
+    # option could be -file, -channel... default to string
+    <lexer> buffer create <name> ?option? <source>            
+
+    # switch to buffer <name>
+    # equivalent to yy_switch_to_buffer
+    <lexer> buffer switch <name>
+  
+    # query the buffer list
+    <lexer> buffer list
+
+    # return the current buffer
+    <lexer> buffer ?current?
+  
+    # delete a buffer
+    <lexer> buffer delete <name>
+
+- Add special "eof" condition necessary with multiple buffers.
+
+- Add -append flag to continue and finish, to append new chars to the
+current input string rather than replacing it.
+
+- Add introspection and debugging features such as actions traces,
+info-like command, ...
+
+- Finish the documentation
+
+- Create Metrowerks CodeWarrior Pro 4 project file for Macintosh (and
+maybe also for Windows, for cross-platform development), and provide
+Macintosh binaries
+
+- Maybe add an option to lexers to disable the conditions stack (eg. -nocs, for 
+"no conditions stack"), for a better (f)lex compatibility. There is no real 
+equivalent to conditions stacks in (f)lex.

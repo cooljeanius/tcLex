@@ -1,0 +1,474 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+   <TITLE>TcLex documentation - Complementary information</TITLE>
+
+   <META NAME="Author"      CONTENT="Frédéric BONNET">
+   <META NAME="Copyright"   CONTENT="Copyright (c) Frédéric BONNET, 1998">
+
+   <LINK REL="StyleSheet" TYPE="text/css" HREF="tcLex.css">
+</HEAD>
+<BODY>
+
+<H2>
+Complementary information
+</H2>
+
+	<H3><A NAME="regexp81">	
+	Using regexps under Tcl 8.1
+	</A></H3>
+
+<P>
+<A HREF="http://www.scriptics.com">Scriptics</A> maintains a very good 
+<A HREF="http://www.scriptics.com/support/howto/regexp81.html">regexp-HOWTO</A>
+with many useful information on how to use regexps under Tcl 8.1.
+
+	<H3><A NAME="flex">	
+	Flex vs tcLex: a side-by-side comparison
+	</A></H3>
+
+<P>
+<STRONG>TcLex</STRONG> borrowed many of its concepts to <STRONG>flex</STRONG> and tried to adapt them to
+the Tcl philosophy. There are then areas where <STRONG>tcLex</STRONG> and <STRONG>flex</STRONG> are really
+similar and interchangeable, while some features are enough different
+to prevent an easy move from one to another.
+
+		<H4><A NAME="syntax">
+		Syntax
+		</A></H4>
+
+<P>
+The most obvious difference is the syntax: <STRONG>flex</STRONG> uses its own whereas <STRONG>tcLex</STRONG>
+uses Tcl's. <STRONG>TcLex</STRONG> tried to borrow as many existing Tcl constructs as
+possible to make it easy to use by Tcl programmers while allowing easy
+understanding by <STRONG>flex</STRONG> programmers. For example, <STRONG>tcLex</STRONG> borrowed its syntax
+to the <STRONG>switch</STRONG> command and most of its procedural model to <STRONG>proc</STRONG>. <STRONG>Flex</STRONG> uses
+specific syntax for rules specifiers and C syntax for actions (ie rules
+scripts). In some areas, <STRONG>tcLex</STRONG> has higher level features than <STRONG>flex</STRONG>.
+
+<P>
+<STRONG>TcLex</STRONG> uses list syntax for rules specifiers and thus requires
+that a fixed number of elements (ie 4 elements) be specified. <STRONG>Flex</STRONG> is more
+permissive because some specifiers can be omitted. For example, the conditions
+list defaults to empty in <STRONG>flex</STRONG> whereas it must be specified as an empty
+list in <STRONG>tcLex</STRONG>. Moreover, <STRONG>tcLex</STRONG> also needs a list of match variables used to
+report the matched parts of the input string, the same way <STRONG>regexp</STRONG> does.
+Here is a short example:
+
+<UL>
+<LI><STRONG>flex</STRONG> syntax:
+
+<BLOCKQUOTE><PRE>
+&lt;cond1&gt;"\n" {
+  /* matches newlines within condition cond1 */
+}
+"\n" {
+  /* matches newlines with empty conditions specifier */
+} 
+</PRE></BLOCKQUOTE>
+
+<LI><STRONG>tcLex</STRONG> syntax:
+
+<BLOCKQUOTE><PRE>
+{cond1} "\n" {} {
+  # matches newlines within condition cond1
+}
+{} "\n" {} {
+  /* matches newlines with empty conditions specifier */
+} 
+</PRE></BLOCKQUOTE>
+
+</UL>
+
+<P>
+Note the empty condition list in the second <STRONG>tcLex</STRONG> rule, as well as the (here
+empty) match variables list. Apart from that, <STRONG>flex</STRONG> and <STRONG>tcLex</STRONG> have very similar
+syntaxes.
+
+<P>
+The second visible difference between <STRONG>flex</STRONG> and <STRONG>tcLex</STRONG> is the latter requiring
+an extra list of match variables. This is a convenient way to get the matched
+parts of the input string, and is inspired by the <STRONG>regexp</STRONG> command syntax.
+Getting the matched string with <STRONG>flex</STRONG> requires using the <STRONG>yytext</STRONG> variable,
+and there is no subexpressions reporting (see <A HREF="#feedback">Feedback</A> below).
+
+<P>
+The third syntactical difference is <STRONG>tcLex</STRONG>'s lack of name definitions. These
+are macro definitions that allows for simpler definition of <STRONG>flex</STRONG>'s regular
+expressions. There is no name definition in <STRONG>tcLex</STRONG> because they can be
+handled by Tcl itself using variable substitutions. For example:
+
+<BLOCKQUOTE><PRE>
+DIGIT    [0-9]
+ID       [a-z][a-z0-9]*
+
+%%
+
+{DIGIT}+"."{DIGIT}*        {
+	printf( "A float: %s (%g)\n", yytext,
+			atof( yytext ) );
+}
+
+{DIGIT}+    {
+	printf( "An integer: %s (%d)\n", yytext,
+			atoi( yytext ) );
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+Note the two name definitions <EM>DIGIT</EM> and <EM>ID</EM>. They are subsequently used in
+the regular expressions to simplify their writing and also make them more
+readable. In <STRONG>tcLex</STRONG> variables must be used:
+
+<BLOCKQUOTE><PRE>
+set DIGIT    {[0-9]}
+set ID       {[a-z][a-z0-9]*}
+
+lexer lx \
+{} ${DIGIT}+.${DIGIT}* {text} {
+	puts "A float: $text ([expr double($text)])"
+} \
+{} ${DIGIT}+ {text} {
+	puts "An integer: $text ([expr int($text)])"
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+Note the use of variable substitutions in regexps. To make variable
+substitutions work, you also have to use the "rules-as-arguments"
+lexer style (see <A HREF="design.htm#style">Lexing With Style</A>): note the backslashes at every
+end of line. The other noticeable difference is the use of a variable
+named <EM>text</EM> to report the matched string. <STRONG>Flex</STRONG> uses <STRONG>yytext</STRONG> for that
+purpose. Be careful to respect Tcl's syntax when defining variables:
+here we have to enclose the name definitions between braces to
+avoid bracket substitution. The regexps are the same except for the
+added <TT>'$'</TT> for variable substition and the removal of inside double quotes.
+Both lexers should work the same.
+
+<P>
+Finally, there are subtle differences in regular expressions syntax
+(<STRONG>tcLex</STRONG> uses Tcl's syntax). First is the absence of trailing contexts
+in <STRONG>tcLex</STRONG> (syntax: <EM>r</EM><TT>/</TT><EM>s</EM>, where <EM>r</EM> is the regular expression and <EM>s</EM> is the
+trailing context). This shouldn't be a big problem though, unless
+when converting from <STRONG>flex</STRONG> to <STRONG>tcLex</STRONG>. Second is line-sensitivity. <STRONG>Flex</STRONG>
+uses line-sensitive regexps whereas Tcl uses line-insensitive by
+default. Since there is no support for line-sensitivity in Tcl8.0
+and Tcl8.1 requires specific syntax, <STRONG>tcLex</STRONG> provides its own portable
+line-sensitivity through the use of the <A HREF="using.htm#-lines" CLASS="keyword"><STRONG>-lines</STRONG></A> switch. Line sensitivity
+changes the meaning of the special characters <TT>'^'</TT>, <TT>'$'</TT> and <TT>'.'</TT> within regexps.
+With line-insensitive regexps, <TT>'^'</TT> and <TT>'$'</TT> respectively match the beginning
+and end of string, and <TT>'.'</TT> any character. With line-sensitive regexps,
+<TT>'^'</TT> and <TT>'$'</TT> respectively match the beginning and end of lines, and <TT>'.'</TT> any
+but the newline character.
+
+
+		<H4><A NAME="feedback">
+		Feedback
+		</A></H4>
+
+<P>
+To report the matched string, <STRONG>flex</STRONG> uses the special string variable
+<STRONG>yytext</STRONG>. <STRONG>TcLex</STRONG> uses a quite different method that is closer to Tcl
+philosophy (ie the <STRONG>regexp</STRONG> command) and also more powerful in term
+of feedback. With <STRONG>flex</STRONG>, parentheses are only used to override
+precedence in regexps. However Tcl regexps also use parentheses
+for reporting subexpressions. To keep this feature, <STRONG>tcLex</STRONG> needs
+variables to report matched substrings, the same way <STRONG>regexp</STRONG> does.
+Thus there is no predefined <STRONG>yytext</STRONG> variable but per-rule user-defined
+variables. This can allow for elegant constructs when several
+rules share the same action. Let's consider the following example,
+where several syntactically different but conceptually similar constructs
+have to be matched:
+
+<BLOCKQUOTE><PRE>
+lexer lexCComments {
+  {} "(/\\*)([^*]*)\\*/"        {text style comment} -
+  -  "(//)(([^\\\\\n]|\\\\.)*)" {text style comment} {
+    # C/C++ comments
+    switch -- $style {
+      /* {set lang C}
+      // {set lang C++}
+    }
+    puts "$lang comment matched: $comment"
+  }
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+The two rules are used to match C and C++ comments. C comments
+are any characters enclosed between <TT>"/*"</TT> and <TT>"*/"</TT>. C++ comments are any
+characters after <TT>"//"</TT> until the end of a line not ending with <TT>'\'</TT> (note
+the quoting hell required for <TT>'\'</TT> to work). Here the same action is used
+for two different rules, but using the same variables for reporting. This
+greatly simplifies rules writing as it allows using the same action
+for several similar yet different rules. Note that the order of the variables may
+differ.
+
+
+		<H4><A NAME="behavior">
+		Behavior
+		</A></H4>
+
+<P>
+There are some behavioral differences between <STRONG>flex</STRONG> and <STRONG>tcLex</STRONG>, but most
+can be overriden by using specific <STRONG>tcLex</STRONG> switches.
+
+<P>
+As previously said, <STRONG>flex</STRONG> is line-sensitive whereas <STRONG>tcLex</STRONG> is line-insensitive
+by default (as Tcl). To enable line-sensitivity, use the <A HREF="using.htm#-lines" CLASS="keyword"><STRONG>-lines</STRONG></A> flag.
+
+<P>
+Second, <STRONG>flex</STRONG> uses a longest prefered match scheme whereas <STRONG>tcLex</STRONG> uses a
+first match scheme by default. Longest prefered match means that every
+rule will be tried and the longest will be used. First match means that
+the first matching rule will be used. This can lead to strange behavior
+when converting from <STRONG>flex</STRONG> to <STRONG>tcLex</STRONG>. For example, this simple lexer taken
+from the <STRONG>flex</STRONG> man page:
+
+<BLOCKQUOTE><PRE>
+DIGIT    [0-9]
+ID       [a-z][a-z0-9]*
+
+%%
+
+{DIGIT}+    {
+	printf( "An integer: %s (%d)\n", yytext,
+			atoi( yytext ) );
+}
+
+{DIGIT}+"."{DIGIT}*        {
+	printf( "A float: %s (%g)\n", yytext,
+			atof( yytext ) );
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+Converting straightforwardly this lexer to <STRONG>tcLex</STRONG> will give incorrect
+results:
+
+<BLOCKQUOTE><PRE>
+set DIGIT    {[0-9]}
+set ID       {[a-z][a-z0-9]*}
+
+lexer lx \
+{} ${DIGIT}+           {text} {
+	puts "An integer: $text ([expr int($text)])"
+} \
+{} ${DIGIT}+.${DIGIT}* {text} {
+	puts "A float: $text ([expr double($text)])"
+}
+</PRE></BLOCKQUOTE>
+
+<P>
+Since <STRONG>tcLex</STRONG> uses first-match by default, the string <TT>"1.5"</TT> which
+would be seen as a float by <STRONG>flex</STRONG> (2nd rule) will be seen as an integer
+by <STRONG>tcLex</STRONG> because first rule is matched before the second. To avoid this
+behavior, either use the <A HREF="using.htm#-longest" CLASS="keyword"><STRONG>-longest</STRONG></A> flag or change the order of the
+rules. Using longest-match can hit performances when there is a large
+number of rules, but changing the order of the rules must also be
+done carefully. What to do will depend on the situation: simple lexers
+(like the one above)
+will behave better by changing order whereas more complex ones will
+be preferabily converted with <A HREF="using.htm#-longest" CLASS="keyword"><STRONG>-longest</STRONG></A> flag to avoid obscure bugs.
+Note that first-match scheme can also be useful to simplify rules
+definitions because one can take their precedence order into account,
+and can greatly speedup the processing. First-match
+scheme was chosed for <STRONG>tcLex</STRONG> because it is the way <STRONG>switch</STRONG> works.
+
+<P>
+The last behavioral difference lies in actions. With <STRONG>flex</STRONG>, actions
+often end with a <STRONG>return</STRONG> statement that returns a specific value to
+the calling context (typically a token returned to a <STRONG>yacc</STRONG> parser).
+<STRONG>TcLex</STRONG> lexers have a completely different behavior. Since lexers are
+seen as a mixture of Tcl <STRONG>switch</STRONG> and <STRONG>proc</STRONG>, a return statement has the
+same consequence as with these commands: stopping the processing.
+Thus it isn't possible yet to use <STRONG>tcLex</STRONG> lexers as tokenizers that return
+a value every time a rule succeeds. Future versions will certainly
+improve on this point and turn lexers into tokenizers. For now, the only
+way lexers can return a value during processing is through the
+incremental processing scheme (see <A HREF="using.htm#incremental">Incremental processing</A>). This choice
+was made to be consistent with <STRONG>proc</STRONG> and <STRONG>switch</STRONG>.
+
+
+		<H4><A NAME="other">
+		Other features
+		</A></H4>
+
+<P>
+<STRONG>Flex</STRONG> provides many functions to access and/or modify the input buffer, such
+as C functions <STRONG>yymore()</STRONG>, <STRONG>yyless()</STRONG>, <STRONG>input()</STRONG> and <STRONG>unput()</STRONG>. <STRONG>TcLex</STRONG> provides
+similar volontarily limited features in the form of <A HREF="using.htm#input" CLASS="keyword"><STRONG>input</STRONG></A> and <A HREF="using.htm#unput" CLASS="keyword"><STRONG>unput</STRONG></A> lexer
+subcommands. The reason for these limitations is that these features can
+be kludgy or can modify the input. 
+
+<UL>
+<LI><STRONG>yymore()</STRONG> is used to append some characters to the next matched text. It
+    can lead to very strange results in some cases and is very kludgy by
+    nature. IMHO the fact that the <STRONG>flex</STRONG> man page uses the <TT>"mega-kludge"</TT>
+    string in an example of <STRONG>yymore()</STRONG> use is not a coincidence :-)
+<LI><STRONG>input()</STRONG> is available unchanged in the form of the <A HREF="using.htm#input" CLASS="keyword"><STRONG>input</STRONG></A> subcommand.
+<LI><STRONG>yyless()</STRONG> is available in the form of the <A HREF="using.htm#unput" CLASS="keyword"><STRONG>unput</STRONG></A> subcommand. <STRONG>Unput()</STRONG> is
+    also available through this subcommand provided that it cannot modify
+    the input buffer, ie unput an arbitrary character. I consider this to
+    be a kludge like <STRONG>yymore()</STRONG> that somewhat violates Tcl philosophy as a
+    high level language. If someone convinces me of the contrary, I'll
+    consider adding such features in future versions ;-) Anyway I don't think
+    they are fundamental but rather denote quick'n dirty design.
+</UL>
+
+
+		<H4><A NAME="chart">
+		Features chart
+		</A></H4>
+
+<TABLE BORDER=2>
+<TR CLASS="odd">
+<TH></TH>					<TH>flex</TH>					<TH>tcLex</TH>
+</TR>
+<TR CLASS="even">
+<TH>use</TH>				<TD>generates static C source files</TD>	<TD>dynamic creation of Tcl commands</TD>
+</TR>
+<TR CLASS="odd">
+<TH>syntax</TH>				<TD>specific</TD>					<TD>Tcl</TD>
+</TR>
+<TR CLASS="even">
+<TH>name definitions</TH>		<TD>yes, specific syntax</TD>			<TD>via Tcl substitutions</TD>
+</TR>
+<TR CLASS="odd">
+<TH>match scheme</TH>			<TD>longest-prefered match only</TD>	<TD>both longest-prefered and first match</TD>
+</TR>
+<TR CLASS="even">
+<TH>line-sensitivity</TH>		<TD>line-sensitive only</TD>			<TD>both line-sensitive and -insensitive</TD>
+</TR>
+<TR CLASS="odd">
+<TH>regular expressions</TH>		<TD>alike Tcl8.0 plus trailing contexts and characters classes</TD>	<TD>depend on Tcl version</TD>
+</TR>
+<TR CLASS="even">
+<TH>reentrancy</TH>			<TD>limited</TD>					<TD>yes</TD>
+</TR>
+<TR CLASS="odd">
+<TH>subexpressions reporting</TH>	<TD>no</TD>						<TD>yes</TD>
+</TR>
+<TR CLASS="even">
+<TH>tokenization</TH>			<TD>yes</TD>					<TD>no</TD>
+</TR>
+<TR CLASS="odd">
+<TH>incremental processing</TH>	<TD>must be specially designed</TD>		<TD>transparent</TD>
+</TR>
+<TR CLASS="even">
+<TH>multiple input buffers</TH>	<TD>yes</TD>					<TD>no</TD>
+</TR>
+</TABLE>
+
+
+
+		<H4><A NAME="converting">
+		Converting <STRONG>flex</STRONG> to <STRONG>tcLex</STRONG>: Rules of Thumb
+		</A></H4>
+
+<P>
+If you plan to use <STRONG>tcLex</STRONG> as a Tcl replacement for <STRONG>flex</STRONG>, it is highly
+probable that you will have to convert a <STRONG>flex</STRONG> lexer to <STRONG>tcLex</STRONG> one day.
+Here are several rules of thumb to save time and avoid strange
+errors:
+
+<UL>
+<LI>name definitions in <STRONG>flex</STRONG> are automatically enclosed between
+    parentheses before they are expanded, unless they begin with
+    <TT>'^'</TT> or end with <TT>'$'</TT>, to avoid precedence problems in regexps. You
+    have to be careful whether you need to add parentheses or not
+    when converting to <STRONG>tcLex</STRONG>.
+<LI>parentheses are only used by <STRONG>flex</STRONG> for precedence in regexps.
+    In <STRONG>tcLex</STRONG> they are also used for reporting. This causes no
+    special problem when directly converting from flex to <STRONG>tcLex</STRONG>,
+    however be careful about parentheses if you later add
+    subexpressions reporting.
+<LI>be careful about Tcl substitutions and escape rules when converting regexps, else
+    the evil Tcl parser will bite'ya ;-) Take care about backslash characters and braces
+    (see the <A HREF="#FAQs">FAQs</A> below).
+<LI><STRONG>flex</STRONG> uses longest-prefered-match scheme, <STRONG>tcLex</STRONG> uses first-match
+    scheme by default. When converting, either use the <A HREF="using.htm#-longest" CLASS="keyword"><STRONG>-longest</STRONG></A>
+    flag (safest but less performant), or change the order of the
+    rules (only if you know what you're doing!)
+<LI><STRONG>flex</STRONG> uses line-sensitive regexp, <STRONG>tcLex</STRONG> is line-insensitive by
+    default. Just use the <A HREF="using.htm#-lines" CLASS="keyword"><STRONG>-lines</STRONG></A> flag if you see that the lexer
+    uses special line-sensitive constructs (ie special characters <TT>^$.</TT>)
+<LI>do not use return statements in actions: they cause the processing
+    to stop. If there are return statements in your <STRONG>flex</STRONG> lexer, it
+    probably means that the lexer is a tokenizer (used in conjunction
+    with <STRONG>yacc</STRONG>). <STRONG>TcLex</STRONG> currently doesn't support tokenizer-style
+    processing so this may need a bit work to convert.
+<LI><STRONG>input()</STRONG> in <STRONG>flex</STRONG> consumes the next character. The <A HREF="using.htm#input" CLASS="keyword"><STRONG>input</STRONG></A> subcommand
+    in <STRONG>tcLex</STRONG> returns one character by default but can take more if
+    requested. A single <STRONG>tcLex</STRONG> <A HREF="using.htm#input" CLASS="keyword"><STRONG>input</STRONG></A> can then be used to replace several
+    subsequent <STRONG>input()</STRONG> calls.
+<LI>replace <STRONG>yyless(<EM>n</EM>)</STRONG> by <A HREF="using.htm#unput" CLASS="keyword"><STRONG>unput</STRONG></A> <STRONG><EM>$n</EM></STRONG>;
+it rewinds the input by <EM>n</EM> chars. Note that, contrary to <STRONG>flex</STRONG>, you cannot rewind past the beginning of the matched string.
+<LI><STRONG>unput()</STRONG> puts back a single character in the input stream. If this
+    character is the same as the one that was extracted (by <STRONG>input()</STRONG>), then
+    use <A HREF="using.htm#unput" CLASS="keyword"><STRONG>unput</STRONG></A> which by default rewinds the input by one char. Else,
+    you're out of luck  :-(
+<LI>there is no equivalent to <STRONG>yymore()</STRONG>. You can somewhat emulate its
+    behavior by storing the <STRONG>yymore</STRONG>'d string in a variable (empty by
+    default) and prepend it to the matched string in every action.
+    Do it only if you can't do else.
+<LI>by default, <STRONG>flex</STRONG> sends matched characters to the output. <STRONG>TcLex</STRONG>
+    has no idea what the output can be (a string, a list, a tree...)
+    so by default it does nothing. You can replace outputs (eg.
+    <STRONG>ECHO</STRONG> statements) with <STRONG>puts</STRONG> calls, and add a default rule that
+    outputs any unmatched character:
+
+<BLOCKQUOTE><PRE>
+* .|\n {c} {puts -nonewline $c}
+</PRE></BLOCKQUOTE>
+</UL>
+
+
+	<H3><A NAME="tips">
+	Tips & Tricks
+	</A></H3>
+
+[to be written]
+
+
+	<H3><A NAME="howto">
+	How to...
+	</A></H3>
+
+[to be written]
+
+
+	<H3><A NAME="FAQs">
+	Frequently Asked Questions (FAQs) & Frequently Made Mistakes (FMMs)
+	</A></H3>
+
+[to be written]
+
+
+	<H3><A NAME="resources">
+	Resources
+	</A></H3>
+
+<P>
+Home page:
+<BLOCKQUOTE>
+	<A HREF="http://www.multimania.com/fbonnet/Tcl/tcLex/index.en.htm">http://www.multimania.com/fbonnet/Tcl/tcLex/index.en.htm (english)</A><BR>
+	<A HREF="http://www.multimania.com/fbonnet/Tcl/tcLex/index.htm">http://www.multimania.com/fbonnet/Tcl/tcLex/index.htm (french)</A>
+</BLOCKQUOTE>
+
+<P>
+Mailing list:
+<BLOCKQUOTE>
+	Home page: <A HREF="http://www.eGroups.com/list/tclex">http://www.eGroups.com/list/tclex</A><BR>
+	To subscribe: <A HREF="mailto:tclex-subscribe@egroups.com">tclex-subscribe@egroups.com</A>
+</BLOCKQUOTE>
+
+<HR>
+<ADDRESS>
+Send questions, comments, requests, etc. to the author: <A HREF="mailto:frederic.bonnet@ciril.fr">Frédéric BONNET &lt;frederic.bonnet@ciril.fr&gt;</A>.
+</ADDRESS>
+
+</BODY>
+</HTML>
