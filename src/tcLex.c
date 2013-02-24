@@ -23,7 +23,11 @@
 #include "tcLexInt.h"
 #include "tcLexRE.h"
 
+#ifdef HAVE_TCLINT_H
 #include <tclInt.h>
+#else
+#include "tclInt.h"
+#endif
 
 /*******************************************************
  *                                                     *
@@ -651,7 +655,7 @@ LexerDelete(lexer)
     if (lexer->states) {
 	TcLex_State *statePtr;
 	for (i=0; i < lexer->nbStates; i++) {
-	    if (statePtr = lexer->states[i]) {
+	    if ((statePtr = lexer->states[i])) {
 		Tcl_Free((char*)statePtr->conditionsStack);
 		Tcl_Free((char*)statePtr->bFailed);
 		Tcl_DecrRefCount(statePtr->inputBuffer.chars);

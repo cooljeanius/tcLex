@@ -3,7 +3,11 @@
 #endif
 
 #include <tcl.h>
+#ifdef HAVE_TCLINT_H
 #include <tclInt.h>
+#else
+#include "tclInt.h"
+#endif
 #include <tclRegexp.h>
 
 

@@ -1,13 +1,22 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#undef HAVE_ARPA_INET_H
+
 /* dlfcn.h is present */
 #undef HAVE_DLFCN_H
 
 /* errno.h is present */
 #undef HAVE_ERRNO_H
 
-/* float.h is present */
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the <float.h> header file. */
 #undef HAVE_FLOAT_H
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -15,17 +24,32 @@
 /* Define to 1 if you have the `tcl' library (-ltcl). */
 #undef HAVE_LIBTCL
 
-/* limits.h is present */
+/* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Define to 1 if you have the <netdb.h> header file. */
+#undef HAVE_NETDB_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
 /* net/errno.h is present */
 #undef HAVE_NET_ERRNO_H
 
+/* Define to 1 if the system has the type `ptrdiff_t'. */
+#undef HAVE_PTRDIFF_T
+
+/* Define to 1 if you have the <stddef.h> header file. */
+#undef HAVE_STDDEF_H
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -36,11 +60,20 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the <sys/file.h> header file. */
+#undef HAVE_SYS_FILE_H
+
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
 
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
+
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
@@ -48,13 +81,62 @@
 /* sys/wait.h is present */
 #undef HAVE_SYS_WAIT_H
 
+/* Define to 1 if you have the <tclIntDecls.h> header file. */
+#undef HAVE_TCLINTDECLS_H
+
+/* Define to 1 if you have the <tclIntPlatDecls.h> header file. */
+#undef HAVE_TCLINTPLATDECLS_H
+
 /* Define to 1 if you have the <tclInt.h> header file. */
 #undef HAVE_TCLINT_H
+
+/* Define to 1 if you have the <tclPort.h> header file. */
+#undef HAVE_TCLPORT_H
+
+/* Define to 1 if you have the <tclRegexp.h> header file. */
+#undef HAVE_TCLREGEXP_H
+
+/* Define to 1 if you have the <tclUnixPort.h> header file. */
+#undef HAVE_TCLUNIXPORT_H
+
+/* Define to 1 if you have the <Tcl/tclIntDecls.h> header file. */
+#undef HAVE_TCL_TCLINTDECLS_H
+
+/* Define to 1 if you have the <Tcl/tclIntPlatDecls.h> header file. */
+#undef HAVE_TCL_TCLINTPLATDECLS_H
+
+/* Define to 1 if you have the <Tcl/tclInt.h> header file. */
+#undef HAVE_TCL_TCLINT_H
+
+/* Define to 1 if you have the <Tcl/tclPort.h> header file. */
+#undef HAVE_TCL_TCLPORT_H
+
+/* Define to 1 if you have the <Tcl/tclUnixPort.h> header file. */
+#undef HAVE_TCL_TCLUNIXPORT_H
+
+/* Define to 1 if you have the <Tcl/tcl-private/tclIntDecls.h> header file. */
+#undef HAVE_TCL_TCL_PRIVATE_TCLINTDECLS_H
+
+/* Define to 1 if you have the <Tcl/tcl-private/tclIntPlatDecls.h> header
+   file. */
+#undef HAVE_TCL_TCL_PRIVATE_TCLINTPLATDECLS_H
+
+/* Define to 1 if you have the <Tcl/tcl-private/tclInt.h> header file. */
+#undef HAVE_TCL_TCL_PRIVATE_TCLINT_H
+
+/* Define to 1 if you have the <Tcl/tcl-private/tclPort.h> header file. */
+#undef HAVE_TCL_TCL_PRIVATE_TCLPORT_H
+
+/* Define to 1 if you have the <Tcl/tcl-private/tclUnixPort.h> header file. */
+#undef HAVE_TCL_TCL_PRIVATE_TCLUNIXPORT_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* values.h is present */
+/* Define to 1 if you have the <utime.h> header file. */
+#undef HAVE_UTIME_H
+
+/* Define to 1 if you have the <values.h> header file. */
 #undef HAVE_VALUES_H
 
 /* dirent.h is missing */
@@ -150,5 +232,14 @@
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 #undef _POSIX_SOURCE
 
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef gid_t
+
+/* Define to `long int' if <sys/types.h> does not define. */
+#undef off_t
+
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef uid_t

@@ -59,14 +59,23 @@ file=${exec_prefix}/lib/tclConfig.sh
 
 CC=$TCL_CC
 
-# Checks for typedefs, structures, and compiler characteristics.
-AC_TYPE_SIZE_T
-
 # Check for header files.
-AC_CHECK_HEADERS([tclInt.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h float.h limits.h netdb.h netinet/in.h stddef.h stdio.h sys/file.h sys/socket.h sys/time.h tclInt.h Tcl/tclInt.h Tcl/tcl-private/tclInt.h tclPort.h Tcl/tclPort.h Tcl/tcl-private/tclPort.h tclUnixPort.h Tcl/tclUnixPort.h Tcl/tcl-private/tclUnixPort.h tclIntDecls.h Tcl/tclIntDecls.h Tcl/tcl-private/tclIntDecls.h tclIntPlatDecls.h Tcl/tclIntPlatDecls.h Tcl/tcl-private/tclIntPlatDecls.h tclRegexp.h utime.h values.h])
 if test "x$HAVE_TCLINT_H" = "x"; then
 	AC_MSG_RESULT([tclInt.h not found, compilation will fail without it])
 fi
+if test "x$HAVE_TCLREGEXP_H" = "x"; then
+	AC_MSG_RESULT([tclRegexp.h not found, compilation will fail without it])
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_UID_T
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_CHECK_TYPES([ptrdiff_t])
+
+# Checks for library functions.
+AC_CHECK_FUNCS([gettimeofday])
 
 AC_SUBST(CC)
 AC_SUBST(INSTALL)

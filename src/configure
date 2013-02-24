@@ -6237,7 +6237,71 @@ file=${exec_prefix}/lib/tclConfig.sh
 
 CC=$TCL_CC
 
+# Check for header files.
+for ac_header in arpa/inet.h fcntl.h float.h limits.h netdb.h netinet/in.h stddef.h stdio.h sys/file.h sys/socket.h sys/time.h tclInt.h Tcl/tclInt.h Tcl/tcl-private/tclInt.h tclPort.h Tcl/tclPort.h Tcl/tcl-private/tclPort.h tclUnixPort.h Tcl/tclUnixPort.h Tcl/tcl-private/tclUnixPort.h tclIntDecls.h Tcl/tclIntDecls.h Tcl/tcl-private/tclIntDecls.h tclIntPlatDecls.h Tcl/tclIntPlatDecls.h Tcl/tcl-private/tclIntPlatDecls.h tclRegexp.h utime.h values.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+if test "x$HAVE_TCLINT_H" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: tclInt.h not found, compilation will fail without it" >&5
+$as_echo "tclInt.h not found, compilation will fail without it" >&6; }
+fi
+if test "x$HAVE_TCLREGEXP_H" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: tclRegexp.h not found, compilation will fail without it" >&5
+$as_echo "tclRegexp.h not found, compilation will fail without it" >&6; }
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
+$as_echo_n "checking for uid_t in sys/types.h... " >&6; }
+if ${ac_cv_type_uid_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "uid_t" >/dev/null 2>&1; then :
+  ac_cv_type_uid_t=yes
+else
+  ac_cv_type_uid_t=no
+fi
+rm -f conftest*
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_uid_t" >&5
+$as_echo "$ac_cv_type_uid_t" >&6; }
+if test $ac_cv_type_uid_t = no; then
+
+$as_echo "#define uid_t int" >>confdefs.h
+
+
+$as_echo "#define gid_t int" >>confdefs.h
+
+fi
+
+ac_fn_c_check_type "$LINENO" "off_t" "ac_cv_type_off_t" "$ac_includes_default"
+if test "x$ac_cv_type_off_t" = xyes; then :
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define off_t long int
+_ACEOF
+
+fi
+
 ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
 if test "x$ac_cv_type_size_t" = xyes; then :
 
@@ -6249,24 +6313,29 @@ _ACEOF
 
 fi
 
+ac_fn_c_check_type "$LINENO" "ptrdiff_t" "ac_cv_type_ptrdiff_t" "$ac_includes_default"
+if test "x$ac_cv_type_ptrdiff_t" = xyes; then :
 
-# Check for header files.
-for ac_header in tclInt.h
+cat >>confdefs.h <<_ACEOF
+#define HAVE_PTRDIFF_T 1
+_ACEOF
+
+
+fi
+
+
+# Checks for library functions.
+for ac_func in gettimeofday
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "tclInt.h" "ac_cv_header_tclInt_h" "$ac_includes_default"
-if test "x$ac_cv_header_tclInt_h" = xyes; then :
+  ac_fn_c_check_func "$LINENO" "gettimeofday" "ac_cv_func_gettimeofday"
+if test "x$ac_cv_func_gettimeofday" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_TCLINT_H 1
+#define HAVE_GETTIMEOFDAY 1
 _ACEOF
 
 fi
-
 done
 
-if test "x$HAVE_TCLINT_H" = "x"; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: tclInt.h not found, compilation will fail without it" >&5
-$as_echo "tclInt.h not found, compilation will fail without it" >&6; }
-fi
 
 
 
