@@ -228,7 +228,7 @@ TCL_LIB_FILE = libtcl8.6.dylib
 TCL_LIB_FLAG = -ltcl8.6
 TCL_LIB_SPEC = -L/opt/local/lib -ltcl8.6
 TCL_PREFIX = /opt/local
-TCL_SHLIB_CFLAGS = -fno-common
+TCL_SHLIB_CFLAGS = -fno-common -framework Tcl
 TCL_SHLIB_LD = ${CC} -dynamiclib ${CFLAGS} ${LDFLAGS} -Wl,-single_module
 TCL_SHLIB_SUFFIX = .dylib
 TCL_SRC_DIR = /opt/local/var/macports/build/_opt_local_var_macports_sources_rsync.macports.org_release_tarballs_ports_lang_tcl/tcl/work/tcl8.6.0
@@ -310,7 +310,7 @@ OBJS = tcLex.o \
 			tcLexRE.o
 
 INSTALLdir = @INSTALLdir@
-SHLIB_CFLAGS = -fno-common
+SHLIB_CFLAGS = -fno-common -framework Tcl
 SHLIB_SUFFIX = .dylib
 SHLIB_LD = ${CC} -dynamiclib ${CFLAGS} ${LDFLAGS} -Wl,-single_module
 AM_CPPFLAGS = -I$(TCL_SRC_DIR)/generic -I$(TCL_PREFIX)/include
