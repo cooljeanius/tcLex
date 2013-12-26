@@ -26,8 +26,12 @@
 #define _TCLUNIXPORT
 
 #ifndef MODULE_SCOPE
-#define MODULE_SCOPE extern
-#endif
+# define MODULE_SCOPE extern
+#endif /* !MODULE_SCOPE */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 /*
  *---------------------------------------------------------------------------
@@ -40,22 +44,28 @@
 #include <fcntl.h>
 #ifdef HAVE_NET_ERRNO_H
 #   include <net/errno.h>
-#endif
+#else
+#  if defined(__GNUC__) && !defined(__APPLE__)
+#    warning tclUnixPort.h expects <net/errno.h> to be included.
+#  endif /* __GNUC__ && !__APPLE__ */
+#endif /* HAVE_NET_ERRNO_H */
 #include <pwd.h>
 #include <signal.h>
 #ifdef HAVE_SYS_PARAM_H
 #   include <sys/param.h>
-#endif
+#else
+#   warning tclUnixPort.h expects <sys/param.h> to be included.
+#endif /* HAVE_SYS_PARAM_H */
 #include <sys/types.h>
 #ifdef USE_DIRENT2_H
-#   include "../compat/dirent2.h"
+#  include "../compat/dirent2.h"
 #else
-#ifdef NO_DIRENT_H
-#   include "../compat/dirent.h"
-#else
-#   include <dirent.h>
-#endif
-#endif
+#  if defined(NO_DIRENT_H) && !defined(HAVE_DIRENT_H)
+#    include "../compat/dirent.h"
+#  elif defined HAVE_DIRENT_H
+#    include <dirent.h>
+#  endif /* NO_DIRENT_H && !HAVE_DIRENT_H */
+#endif /* USE_DIRENT2_H */
 
 #ifdef HAVE_STRUCT_DIRENT64
 typedef struct dirent64	Tcl_DirEntry;
@@ -611,7 +621,7 @@ EXTERN char *          	TclpInetNtoa(struct in_addr);
 #	define TclpPthreadGetAttrs	pthread_attr_get_np
 #	ifdef ATTRGETNP_NOT_DECLARED
 /*
- * Assume it is in pthread_np.h if it isn't in pthread.h. [Bug 1064882]
+ * Assume it is in pthread_np.h if it is NOT in pthread.h. [Bug 1064882]
  * We might need to revisit this in the future. :^(
  */
 #	    include <pthread.h>

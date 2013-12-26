@@ -1,13 +1,14 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if building universal (internal helper macro) */
+#undef AC_APPLE_UNIVERSAL_BUILD
+
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
-/* dlfcn.h is present */
-#undef HAVE_DLFCN_H
-
-/* errno.h is present */
-#undef HAVE_ERRNO_H
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_DIRENT_H
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -18,6 +19,12 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Define to 1 if the system has the type `intmax_t'. */
+#undef HAVE_INTMAX_T
+
+/* Define to 1 if the system has the type `intptr_t'. */
+#undef HAVE_INTPTR_T
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -27,8 +34,14 @@
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
+/* Define to 1 if the system has the type `long long int'. */
+#undef HAVE_LONG_LONG_INT
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+#undef HAVE_NDIR_H
 
 /* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H
@@ -36,7 +49,7 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* net/errno.h is present */
+/* Defined to 1 if we have net/errno.h */
 #undef HAVE_NET_ERRNO_H
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
@@ -60,8 +73,16 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_DIR_H
+
 /* Define to 1 if you have the <sys/file.h> header file. */
 #undef HAVE_SYS_FILE_H
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_NDIR_H
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
@@ -77,9 +98,6 @@
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
-
-/* sys/wait.h is present */
-#undef HAVE_SYS_WAIT_H
 
 /* Define to 1 if you have the <tclIntDecls.h> header file. */
 #undef HAVE_TCLINTDECLS_H
@@ -130,8 +148,14 @@
 /* Define to 1 if you have the <Tcl/tcl-private/tclUnixPort.h> header file. */
 #undef HAVE_TCL_TCL_PRIVATE_TCLUNIXPORT_H
 
+/* Define to 1 if the system has the type `uintptr_t'. */
+#undef HAVE_UINTPTR_T
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if the system has the type `unsigned long long int'. */
+#undef HAVE_UNSIGNED_LONG_LONG_INT
 
 /* Define to 1 if you have the <utime.h> header file. */
 #undef HAVE_UTIME_H
@@ -139,34 +163,34 @@
 /* Define to 1 if you have the <values.h> header file. */
 #undef HAVE_VALUES_H
 
-/* dirent.h is missing */
+/* Defined to 1 if there is no dirent.h */
 #undef NO_DIRENT_H
 
-/* dlfcn.h is missing */
+/* Defined to 1 if there is no dlfcn.h */
 #undef NO_DLFCN_H
 
-/* errno.h is missing */
+/* Defined to 1 if there is no errno.h */
 #undef NO_ERRNO_H
 
-/* float.h is missing */
+/* Defined to 1 if there is no float.h */
 #undef NO_FLOAT_H
 
-/* limits.h is missing */
+/* Defined to 1 if there is no limits.h */
 #undef NO_LIMITS_H
 
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
 #undef NO_MINUS_C_MINUS_O
 
-/* stlib.h is missing */
+/* Defined to 1 if there is no stdlib.h */
 #undef NO_STDLIB_H
 
-/* string.h is missing */
+/* Defined to 1 if there is no string.h */
 #undef NO_STRING_H
 
-/* sys/wait.h is missing */
+/* Defined to 1 if there is no sys/wait.h */
 #undef NO_SYS_WAIT_H
 
-/* values.h is missing */
+/* Defined to 1 if there is no values.h */
 #undef NO_VALUES_H
 
 /* Name of package */
@@ -189,6 +213,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define to 1 if the C compiler supports function prototypes. */
+#undef PROTOTYPES
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -218,6 +245,18 @@
 /* Version number of package */
 #undef VERSION
 
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
+# endif
+#endif
+
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
 #undef YYTEXT_POINTER
@@ -232,8 +271,19 @@
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 #undef _POSIX_SOURCE
 
+/* Define like PROTOTYPES; this can be used by system headers. */
+#undef __PROTOTYPES
+
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef gid_t
+
+/* Define to the widest signed integer type if <stdint.h> and <inttypes.h> do
+   not define. */
+#undef intmax_t
+
+/* Define to the type of a signed integer type wide enough to hold a pointer,
+   if such a type exists, and if the system does not define it. */
+#undef intptr_t
 
 /* Define to `long int' if <sys/types.h> does not define. */
 #undef off_t
@@ -243,3 +293,7 @@
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef uid_t
+
+/* Define to the type of an unsigned integer type wide enough to hold a
+   pointer, if such a type exists, and if the system does not define it. */
+#undef uintptr_t

@@ -15,19 +15,23 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #ifndef HAVE_UNISTD_H
-#define HAVE_UNISTD_H
-#endif
+# define HAVE_UNISTD_H
+#endif /* !HAVE_UNISTD_H */
 
 #include "tcLex.h"
 #include "tcLexInt.h"
 #include "tcLexRE.h"
 
 #ifdef HAVE_TCLINT_H
-#include <tclInt.h>
+# include <tclInt.h>
 #else
-#include "tclInt.h"
-#endif
+# include "tclInt.h"
+#endif /* HAVE_TCLINT_H */
 
 /*******************************************************
  *                                                     *
@@ -45,7 +49,7 @@
  *
  * Results:
  *	0 for the initial condition;
- *	-1 if the condition doesn't exist;
+ *	-1 if the condition does NOT exist;
  *	Else a positive integer corresponding to an index.
  *
  * Side effects:
@@ -99,7 +103,7 @@ ConditionIndex(lexer, string)
  *
  * Results:
  *	A Tcl_Obj* containing the condition's string, or NULL if
- *	the condition doesn't exist.
+ *	the condition does NOT exist.
  *
  * Side effects:
  *	None.
@@ -139,7 +143,7 @@ ConditionFromIndex(lexer, index)
  *	Check if the condition (given its index) is exclusive.
  *
  * Results:
- *	-1 if the condition doesn't exist;
+ *	-1 if the condition does NOT exist;
  *	 0 if the condition is inclusive;
  *	 1 if the condition is inclusive.
  *
@@ -809,7 +813,7 @@ LexerNew(interp, inclusiveConditions, exclusiveConditions, resultVariable,
     nbConds = lexer->nbInclusiveConditions+lexer->nbExclusiveConditions+1;
     lexer->activeRules = (int **)Tcl_Alloc(sizeof(int *) * nbConds);
     for (i=0; i < nbConds; i++) {
-	/* Pre-allocation, we'll shrink later */
+	/* Pre-allocation, we will shrink later */
 	lexer->activeRules[i] = (int *)Tcl_Alloc(sizeof(int) * nbRules);
 	for (j=0; j < nbRules; j++)
 	    lexer->activeRules[i][j] = -1;
@@ -921,7 +925,7 @@ LexerNew(interp, inclusiveConditions, exclusiveConditions, resultVariable,
 	    int ci = ConditionIndex(lexer, Tcl_GetStringFromObj(cv[k], NULL));
 	    if (   ci == -1
 		&& strcmp(Tcl_GetStringFromObj(cv[k], NULL), "*") != 0)
-		 /* Error, the condition doesn't exist and is not a wildcard */
+		 /* Error, the condition does NOT exist and is not a wildcard */
 		 goto unknownConditionError;
 	    lexer->rules[j].conditionsIndices[k] = ci;
 	}
@@ -1390,7 +1394,7 @@ LexerCreateObjCmd(clientData, interp, objc, objv, start)
      * Create the lexer Tcl command
      */
 
-    if (strncmp(name, "::", 2) != 0) { /* Lexer isn't created in the global namespace */
+    if (strncmp(name, "::", 2) != 0) { /* Lexer is NOT created in the global namespace */
 	lexerName = Tcl_NewStringObj(Tcl_GetCurrentNamespace(interp)->fullName, -1);
 	Tcl_AppendStringsToObj(lexerName, "::", name, NULL);
 	name = Tcl_GetStringFromObj(lexerName, NULL);
@@ -1521,10 +1525,10 @@ numberArgsError:
  * Results:
  *	An integer code:
  *	    LEXER_RULETRY_ERROR   : an error has occured
- *	    LEXER_RULETRY_NOMATCH : the rule didn't match
+ *	    LEXER_RULETRY_NOMATCH : the rule did NOT match
  *	    LEXER_RULETRY_MATCHED : the rule matched
- *	    LEXER_RULETRY_OVERRUN : the rule didn't match but the
- *				    string was overrun
+ *	    LEXER_RULETRY_OVERRUN : the rule did NOT match but the
+ *				                string was overrun
  *
  * Side effects:
  *	Modifies the state's matched indices.
@@ -1588,9 +1592,9 @@ RuleTry(interp, lexer, iRule, bCheckOverrun, pMinLength)
     if (e < s) { /* Empty string matched */
 	if (   iRule == statePtr->lastMatched
 	    || statePtr->currentBuffer->bMatchedEmpty)
-	    /* The previous rule can't match an empty string again.
-	     * Also we can't match two consecutive empty strings
-	     * else we'll run into an infinite loop */
+	    /* The previous rule cannot match an empty string again.
+	     * Also we cannot match two consecutive empty strings
+	     * else we shall run into an infinite loop */
 	    return LEXER_RULETRY_NOMATCH;
 
 	statePtr->currentBuffer->bMatchedEmpty = 1;
@@ -1880,8 +1884,8 @@ LexerEval(interp, lexer, bCheckOverrun)
 
 	    matchedRule = iRule;
 	    if (!(lexer->flags & LEXER_FLAG_LONGEST))
-		/* If we don't want the longest match, we take
-		   the first: just stop there. */
+		/* If we do NOT want the longest match, we take
+		 * the first: just stop there. */
 		break;
 	}
 
@@ -2492,7 +2496,7 @@ LexerEndObjCmd(clientData, interp, objc, objv)
     /*
      * Delete the last condition from the stack
      *
-     * We don'really need to realloc conditionsStack, since it is realloc'd 
+     * We do NOT really need to realloc conditionsStack, since it is realloc'd 
      * with ConditionBegin and is freed when the lexer ends. So we just
      * decrement conditionsStackLength.
      */
@@ -2741,7 +2745,7 @@ LexerInputObjCmd(clientData, interp, objc, objv)
     val = Tcl_NewStringObj(str+oldIndex, statePtr->currentBuffer->nextIndex-oldIndex);
 #else
     val = Tcl_NewUnicodeObj(str+oldIndex, statePtr->currentBuffer->nextIndex-oldIndex);
-#endif
+#endif /* Tcl8.0 */
 
     Tcl_SetObjResult(interp, val);
     return TCL_OK;
@@ -2998,9 +3002,9 @@ int Tclex_Init(interp)
 {  
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
-	return TCL_ERROR;
+		return TCL_ERROR;
     }
-#endif
+#endif /* USE_TCL_STUBS */
 
 
     /* Dependencies */
@@ -3082,3 +3086,4 @@ DllEntryPoint(hInst, reason, reserved)
 }
 #endif /* WIN32 */
 
+/* EOF */

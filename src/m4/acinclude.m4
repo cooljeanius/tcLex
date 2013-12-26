@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4 97234 2012-08-31 18:34:14Z cal@macports.org $
+dnl# $Id: aclocal.m4 97234 2012-08-31 18:34:14Z cal@macports.org $
 builtin(include,m4/tcl.m4)
 builtin(include,m4/pthread.m4)
 builtin(include,m4/foundation.m4)
@@ -24,39 +24,34 @@ builtin(include,m4/foundation.m4)
 #		HAVE_FRAMEWORK_COREFOUNDATION
 #
 #------------------------------------------------------------------------
-AC_DEFUN([MP_CHECK_FRAMEWORK_COREFOUNDATION], [
+AC_DEFUN([MP_CHECK_FRAMEWORK_COREFOUNDATION],[
+	AC_CHECK_HEADERS_ONCE([CoreFoundation/CoreFoundation.h])
 	FRAMEWORK_LIBS="-framework CoreFoundation"
-
 	AC_MSG_CHECKING([for CoreFoundation framework])
-
-	AC_CACHE_VAL(mp_cv_have_framework_corefoundation, [
+	AC_CACHE_VAL([mp_cv_have_framework_corefoundation],[
 		ac_save_LIBS="$LIBS"
 		LIBS="$FRAMEWORK_LIBS $LIBS"
-		
+		AC_LANG_PUSH([C])
 		AC_LINK_IFELSE([
-			AC_LANG_PROGRAM([
+			AC_LANG_PROGRAM([[
 					#include <CoreFoundation/CoreFoundation.h>
-				], [
+				]],[[
 					CFURLRef url = CFURLCreateWithFileSystemPath(NULL, CFSTR("/testing"), kCFURLPOSIXPathStyle, 1);
 					CFArrayRef bundles = CFBundleCreateBundlesFromDirectory(NULL, url, CFSTR("pkg"));
-			])
-			], [
+			]])
+			],[
 				mp_cv_have_framework_corefoundation="yes"
-			], [
+			],[
 				mp_cv_have_framework_corefoundation="no"
-			]
-		)
-
+			])
+		AC_LANG_POP
 		LIBS="$ac_save_LIBS"
 	])
-
-	AC_MSG_RESULT(${mp_cv_have_framework_corefoundation})
-
+	AC_MSG_RESULT([${mp_cv_have_framework_corefoundation}])
 	if test x"${mp_cv_have_framework_corefoundation}" = "xyes"; then
-		AC_DEFINE([HAVE_FRAMEWORK_COREFOUNDATION], [], [Define if CoreFoundation framework is available])
+		AC_DEFINE([HAVE_FRAMEWORK_COREFOUNDATION],[1],[Define to 1 if CoreFoundation framework is available])
 	fi
-
-	AC_SUBST(HAVE_FRAMEWORK_COREFOUNDATION)
+	AC_SUBST([HAVE_FRAMEWORK_COREFOUNDATION])
 ])
 
 
@@ -82,38 +77,33 @@ AC_DEFUN([MP_CHECK_FRAMEWORK_COREFOUNDATION], [
 #		HAVE_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER
 #
 #------------------------------------------------------------------------
-AC_DEFUN([MP_CHECK_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER], [
+AC_DEFUN([MP_CHECK_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER],[
+	AC_REQUIRE([MP_CHECK_FRAMEWORK_COREFOUNDATION])
 	FRAMEWORK_LIBS="-framework CoreFoundation"
-
 	AC_MSG_CHECKING([for CFNotificationCenterGetDarwinNotifyCenter])
-
-	AC_CACHE_VAL(mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter, [
+	AC_CACHE_VAL([mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter],[
 		ac_save_LIBS="$LIBS"
 		LIBS="$FRAMEWORK_LIBS $LIBS"
-		
+		AC_LANG_PUSH([C])
 		AC_LINK_IFELSE([
-			AC_LANG_PROGRAM([
+			AC_LANG_PROGRAM([[
 					#include <CoreFoundation/CoreFoundation.h>
-				], [
+				]],[[
 					CFNotificationCenterRef ref = CFNotificationCenterGetDarwinNotifyCenter();
-			])
-			], [
+			]])
+			],[
 				mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter="yes"
-			], [
+			],[
 				mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter="no"
-			]
-		)
-
+			])
+		AC_LANG_POP
 		LIBS="$ac_save_LIBS"
 	])
-
-	AC_MSG_RESULT(${mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter})
-
+	AC_MSG_RESULT([${mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter}])
 	if test x"${mp_cv_have_function_cfnotificationcentergetdarwinnotifycenter}" = "xyes"; then
-		AC_DEFINE([HAVE_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER], [], [Define if function CFNotificationCenterGetDarwinNotifyCenter in CoreFoundation framework])
+		AC_DEFINE([HAVE_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER],[1],[Defined to 1 if function CFNotificationCenterGetDarwinNotifyCenter in CoreFoundation framework])
 	fi
-
-	AC_SUBST(HAVE_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER)
+	AC_SUBST([HAVE_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER])
 ])
 
 
@@ -138,39 +128,34 @@ AC_DEFUN([MP_CHECK_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER], [
 #		HAVE_FRAMEWORK_SYSTEMCONFIGURATION
 #
 #------------------------------------------------------------------------
-AC_DEFUN([MP_CHECK_FRAMEWORK_SYSTEMCONFIGURATION], [
+AC_DEFUN([MP_CHECK_FRAMEWORK_SYSTEMCONFIGURATION],[
+	AC_CHECK_HEADERS_ONCE([SystemConfiguration/SystemConfiguration.h])
 	FRAMEWORK_LIBS="-framework SystemConfiguration"
-
 	AC_MSG_CHECKING([for SystemConfiguration framework])
-
-	AC_CACHE_VAL(mp_cv_have_framework_systemconfiguration, [
+	AC_CACHE_VAL([mp_cv_have_framework_systemconfiguration],[
 		ac_save_LIBS="$LIBS"
 		LIBS="$FRAMEWORK_LIBS $LIBS"
-		
+		AC_LANG_PUSH([C])
 		AC_LINK_IFELSE([
-			AC_LANG_PROGRAM([
+			AC_LANG_PROGRAM([[
 					#include <SystemConfiguration/SystemConfiguration.h>
-				], [
+				]],[[
 					int err = SCError();
 					SCDynamicStoreRef dsRef = SCDynamicStoreCreate(NULL, NULL, NULL, NULL);
-			])
-			], [
+			]])
+			],[
 				mp_cv_have_framework_systemconfiguration="yes"
-			], [
+			],[
 				mp_cv_have_framework_systemconfiguration="no"
-			]
-		)
-
+			])
+		AC_LANG_POP
 		LIBS="$ac_save_LIBS"
 	])
-
-	AC_MSG_RESULT(${mp_cv_have_framework_systemconfiguration})
-
+	AC_MSG_RESULT([${mp_cv_have_framework_systemconfiguration}])
 	if test x"${mp_cv_have_framework_systemconfiguration}" = "xyes"; then
-		AC_DEFINE([HAVE_FRAMEWORK_SYSTEMCONFIGURATION], [], [Define if SystemConfiguration framework is available])
+		AC_DEFINE([HAVE_FRAMEWORK_SYSTEMCONFIGURATION],[1],[Defined to 1 if SystemConfiguration framework is available])
 	fi
-
-	AC_SUBST(HAVE_FRAMEWORK_SYSTEMCONFIGURATION)
+	AC_SUBST([HAVE_FRAMEWORK_SYSTEMCONFIGURATION])
 ])
 
 
@@ -195,53 +180,46 @@ AC_DEFUN([MP_CHECK_FRAMEWORK_SYSTEMCONFIGURATION], [
 #		HAVE_FRAMEWORK_IOKIT
 #
 #------------------------------------------------------------------------
-AC_DEFUN([MP_CHECK_FRAMEWORK_IOKIT], [
+AC_DEFUN([MP_CHECK_FRAMEWORK_IOKIT],[
+	AC_CHECK_HEADERS_ONCE([IOKit/IOKitLib.h])
 	FRAMEWORK_LIBS="-framework IOKit"
-
 	AC_MSG_CHECKING([for IOKit framework])
-
-	AC_CACHE_VAL(mp_cv_have_framework_iokit, [
+	AC_CACHE_VAL([mp_cv_have_framework_iokit],[
 		ac_save_LIBS="$LIBS"
 		LIBS="$FRAMEWORK_LIBS $LIBS"
-		
+		AC_LANG_PUSH([C])
 		AC_LINK_IFELSE([
-			AC_LANG_PROGRAM([
+			AC_LANG_PROGRAM([[
 					#include <IOKit/IOKitLib.h>
-				], [
+				]],[[
 					IOCreateReceivePort(0, NULL);
 					IORegisterForSystemPower(0, NULL, NULL, NULL);
-			])
-			], [
+			]])
+			],[
 				mp_cv_have_framework_iokit="yes"
-			], [
+			],[
 				mp_cv_have_framework_iokit="no"
-			]
-		)
-
+			])
+		AC_LANG_POP
 		LIBS="$ac_save_LIBS"
 	])
-
-	AC_MSG_RESULT(${mp_cv_have_framework_iokit})
-
+	AC_MSG_RESULT([${mp_cv_have_framework_iokit}])
 	if test x"${mp_cv_have_framework_iokit}" = "xyes"; then
-		AC_DEFINE([HAVE_FRAMEWORK_IOKIT], [], [Define if IOKit framework is available])
+		AC_DEFINE([HAVE_FRAMEWORK_IOKIT],[1],[Defined to 1 if IOKit framework is available])
 	fi
-
-	AC_SUBST(HAVE_FRAMEWORK_IOKIT)
+	AC_SUBST([HAVE_FRAMEWORK_IOKIT])
 ])
 
-
-dnl This macro checks if the user specified a ports tree
-dnl explicitly. If not, search for it
-
-# MP_PATH_PORTSDIR(DEFAULT_PORTSDIR)
+dnl# This macro checks if the user specified a ports tree
+dnl# explicitly. If not, search for it.
+#
+# MP_PATH_PORTSDIR([DEFAULT_PORTSDIR])
 #---------------------------------------
  AC_DEFUN([MP_PATH_PORTSDIR],[
- 	dnl For ease of reading, run after gcc has been found/configured
+ 	dnl# For ease of reading, run after gcc has been found/configured
  	AC_REQUIRE([AC_PROG_CC])
 
- 	AC_ARG_WITH(ports-dir, [AS_HELP_STRING([--with-ports-dir=DIR],[Specify alternate ports directory])], [ portsdir="$withval" ] )
-
+ 	AC_ARG_WITH([ports-dir],[AS_HELP_STRING([--with-ports-dir=DIR],[Specify alternate ports directory])],[portsdir="$withval"])
 
  	AC_MSG_CHECKING([for ports tree])
  	if test "x$portsdir" != "x" ; then
@@ -260,22 +238,20 @@ dnl explicitly. If not, search for it
  	fi
 
  	if test "x$portsdir" != "x" ; then
- 		AC_MSG_RESULT($portsdir)
+ 		AC_MSG_RESULT([$portsdir])
  		PORTSDIR="$portsdir"
- 		AC_SUBST(PORTSDIR)
+ 		AC_SUBST([PORTSDIR])
  	else
  		AC_MSG_WARN([No ports tree found])
  	fi
-
-         ])
-
+	])
 
 # MP_PATH_MPCONFIGDIR
 #---------------------------------------
 AC_DEFUN([MP_PATH_MPCONFIGDIR],[
-	dnl if the user actually specified --prefix, shift
-	dnl mpconfigdir to $prefix/etc/macports
-	dnl 	AC_REQUIRE([MP_PATH_PORTSDIR])
+	dnl# if the user actually specified --prefix, shift
+	dnl# mpconfigdir to $prefix/etc/macports
+	AC_REQUIRE([MP_PATH_PORTSDIR])
 	
         AC_MSG_CHECKING([for MacPorts config directory])
 
@@ -290,7 +266,7 @@ AC_DEFUN([MP_PATH_MPCONFIGDIR],[
 # MP_CHECK_OLDLAYOUT
 #---------------------------------------
 AC_DEFUN([MP_CHECK_OLDLAYOUT],[
-	dnl Bail if there is an existing install of DP/MP older than 1.5
+	dnl# Bail if there is an existing install of DP/MP older than 1.5
 
 	AC_MSG_CHECKING([that any existing MacPorts install can be upgraded])
 
@@ -300,18 +276,17 @@ AC_DEFUN([MP_CHECK_OLDLAYOUT],[
 	else
 		AC_MSG_RESULT([yes])
 	fi
-
 	])
 
 # MP_CHECK_NOROOTPRIVILEGES
 #-------------------------------------------------
 AC_DEFUN([MP_CHECK_NOROOTPRIVILEGES],[
-	dnl if with user specifies --with-no-root-privileges,
-	dnl use current user and group.
-	dnl use ~/Library/Tcl as Tcl package directory
-		AC_REQUIRE([MP_PATH_MPCONFIGDIR])
+	dnl# if with user specifies --with-no-root-privileges,
+	dnl# use current user and group.
+	dnl# use ~/Library/Tcl as Tcl package directory
+	AC_REQUIRE([MP_PATH_MPCONFIGDIR])
 
-	AC_ARG_WITH(no-root-privileges, [AS_HELP_STRING([--with-no-root-privileges],[Specify that MacPorts should be installed in your home directory])], [ROOTPRIVS=$withval] )
+	AC_ARG_WITH([no-root-privileges],[AS_HELP_STRING([--with-no-root-privileges],[Specify that MacPorts should be installed in your home directory])],[ROOTPRIVS=$withval] )
 
 	if test "${ROOTPRIVS+set}" = set; then
 
@@ -319,81 +294,79 @@ AC_DEFUN([MP_CHECK_NOROOTPRIVILEGES],[
 		AC_MSG_CHECKING([for install user])
 		DSTUSR=`id -un`
 		AC_MSG_RESULT([$DSTUSR])
-		AC_SUBST(DSTUSR)
+		AC_SUBST([DSTUSR])
 		
 		# Set install-group to current user
 		AC_MSG_CHECKING([for install group])
 		DSTGRP=`id -gn`
 		AC_MSG_RESULT([$DSTGRP])
-		AC_SUBST(DSTGRP)
+		AC_SUBST([DSTGRP])
 
 		# Set run-user to current user
 		AC_MSG_CHECKING([for macports user])
 		RUNUSR=`id -un`
 		AC_MSG_RESULT([$RUNUSR])
-		AC_SUBST(RUNUSR)
+		AC_SUBST([RUNUSR])
 
 		# Set Tcl package directory to ~/Library/Tcl
-	    AC_MSG_CHECKING(for Tcl package directory)
+	    AC_MSG_CHECKING([for Tcl package directory])
 		ac_cv_c_tclpkgd=`eval echo ~$DSTUSR/Library/Tcl`
 	    # Convert to a native path and substitute into the output files.
 	    PACKAGE_DIR_NATIVE=`${CYGPATH} ${ac_cv_c_tclpkgd}`
 	    TCL_PACKAGE_DIR=${PACKAGE_DIR_NATIVE}
-	    AC_SUBST(TCL_PACKAGE_DIR)
+	    AC_SUBST([TCL_PACKAGE_DIR])
 		if test x"${ac_cv_c_tclpkgd}" = x ; then
-			AC_MSG_ERROR(Tcl package directory not found.  Please specify its location with --with-tclpackage)
+			AC_MSG_ERROR([Tcl package directory not found.  Please specify its location with --with-tclpackage])
 	    else
-			AC_MSG_RESULT(${ac_cv_c_tclpkgd})
+			AC_MSG_RESULT([${ac_cv_c_tclpkgd}])
 	    fi
 	fi
-
 ])
 
 # MP_CHECK_RUNUSER
 #-------------------------------------------------
 AC_DEFUN([MP_CHECK_RUNUSER],[
-	dnl if with user specifies --with-macports-user,
-	dnl use it. otherwise default to platform defaults
-       AC_REQUIRE([MP_PATH_MPCONFIGDIR])
+	dnl# if with user specifies --with-macports-user,
+	dnl# use it. otherwise default to platform defaults
+	AC_REQUIRE([MP_PATH_MPCONFIGDIR])
 
-	AC_ARG_WITH(macports-user, [AS_HELP_STRING([--with-macports-user=USER],[Specify user to drop privileges to, if possible, during compiles etc.])], [ RUNUSR=$withval ] )
+	AC_ARG_WITH([macports-user],[AS_HELP_STRING([--with-macports-user=USER],[Specify user to drop privileges to, if possible, during compiles etc.])],[RUNUSR=$withval])
 	
 	AC_MSG_CHECKING([for macports user])
 	if test "x$RUNUSR" = "x" ; then
 	   RUNUSR=macports
 	fi
-
 	AC_MSG_RESULT([$RUNUSR])
-	AC_SUBST(RUNUSR)
+	AC_SUBST([RUNUSR])
 ])
 
 
 # MP_SHARED_DIRECTORY
 #-------------------------------------------------
 AC_DEFUN([MP_SHARED_DIRECTORY],[
-	dnl if with user specifies --with-shared-directory,
-	dnl use 0775 permissions for ${prefix} directories
+	dnl# if with user specifies --with-shared-directory,
+	dnl# use 0775 permissions for ${prefix} directories
         AC_REQUIRE([MP_PATH_MPCONFIGDIR])
 
-	AC_ARG_WITH(shared-directory, [AS_HELP_STRING([--with-shared-directory],[Use 0775 permissions for installed directories])], [ SHAREDIR=$withval ] )
+	AC_ARG_WITH([shared-directory],[AS_HELP_STRING([--with-shared-directory],[Use 0775 permissions for installed directories])],[SHAREDIR=$withval])
 
 	if test "${SHAREDIR+set}" = set; then	
 		AC_MSG_CHECKING([whether to share the install directory with all members of the install group])
 	    DSTMODE=0775
 
 		AC_MSG_RESULT([$DSTMODE])
-		AC_SUBST(DSTMODE)
+		AC_SUBST([DSTMODE])
 	fi
 ])
 
 # MP_CHECK_INSTALLUSER
 #-------------------------------------------------
 AC_DEFUN([MP_CHECK_INSTALLUSER],[
-	dnl if with user specifies --with-install-user,
-	dnl use it. otherwise default to platform defaults
+	dnl# if with user specifies --with-install-user,
+	dnl# use it. otherwise default to platform defaults
         AC_REQUIRE([MP_PATH_MPCONFIGDIR])
 
-	AC_ARG_WITH(install-user, [AS_HELP_STRING([--with-install-user=USER],[Specify user ownership of installed files])], [ DSTUSR=$withval ] )
+	AC_ARG_WITH([install-user],[AS_HELP_STRING([--with-install-user=USER],[Specify user ownership of installed files])],[DSTUSR=$withval])
 	
 	AC_MSG_CHECKING([for install user])
 	if test "x$DSTUSR" = "x" ; then
@@ -401,21 +374,20 @@ AC_DEFUN([MP_CHECK_INSTALLUSER],[
 	fi
 
 	AC_MSG_RESULT([$DSTUSR])
-	AC_SUBST(DSTUSR)
+	AC_SUBST([DSTUSR])
 ])
 
 # MP_CHECK_INSTALLGROUP
 #-------------------------------------------------
 AC_DEFUN([MP_CHECK_INSTALLGROUP],[
-	dnl if with user specifies --with-install-group,
-	dnl use it. otherwise default to platform defaults
+	dnl# if with user specifies --with-install-group,
+	dnl# use it. otherwise default to platform defaults
         AC_REQUIRE([MP_CHECK_INSTALLUSER])
 
-	AC_ARG_WITH(install-group, [AS_HELP_STRING([--with-install-group=GROUP],[Specify group ownership of installed files])], [ DSTGRP=$withval ] )
+	AC_ARG_WITH([install-group],[AS_HELP_STRING([--with-install-group=GROUP],[Specify group ownership of installed files])],[DSTGRP=$withval])
 
 	AC_MSG_CHECKING([for install group])
 	if test "x$DSTGRP" = "x" ; then
-	   
 	   case $host_os in
 	   darwin*)
 		DSTGRP="admin"
@@ -431,20 +403,19 @@ AC_DEFUN([MP_CHECK_INSTALLGROUP],[
 		;;
 	   esac
 	fi
-
 	AC_MSG_RESULT([$DSTGRP])
-	AC_SUBST(DSTGRP)
+	AC_SUBST([DSTGRP])
 ])
 
 # MP_DIRECTORY_MODE
 #-------------------------------------------------
 AC_DEFUN([MP_DIRECTORY_MODE],[
-	dnl if with user specifies --with-directory-mode,
-	dnl use the specified permissions for ${prefix} directories
-	dnl otherwise use 0755
+	dnl# if with user specifies --with-directory-mode,
+	dnl# use the specified permissions for ${prefix} directories
+	dnl# otherwise use 0755
         AC_REQUIRE([MP_PATH_MPCONFIGDIR])
 
-	AC_ARG_WITH(directory-mode, [AS_HELP_STRING([--with-directory-mode=MODE],[Specify directory mode of installed directories])], [ DSTMODE=$withval ] )
+	AC_ARG_WITH([directory-mode],[AS_HELP_STRING([--with-directory-mode=MODE],[Specify directory mode of installed directories])],[DSTMODE=$withval])
 	
 	AC_MSG_CHECKING([what permissions to use for installation directories])
 	if test "x$DSTMODE" = "x" ; then
@@ -452,7 +423,7 @@ AC_DEFUN([MP_DIRECTORY_MODE],[
 	fi
 
 	AC_MSG_RESULT([$DSTMODE])
-	AC_SUBST(DSTMODE)
+	AC_SUBST([DSTMODE])
 ])
 
 # MP_PATH_APPLICATIONS
@@ -460,7 +431,7 @@ AC_DEFUN([MP_DIRECTORY_MODE],[
 AC_DEFUN([MP_PATH_APPLICATIONS],[
         AC_REQUIRE([MP_CHECK_INSTALLUSER])
 
-    AC_ARG_WITH(applications-dir,[AS_HELP_STRING([--with-applications-dir],[Applications installation directory.])], MPAPPLICATIONSDIR=${withval})
+    AC_ARG_WITH([applications-dir],[AS_HELP_STRING([--with-applications-dir],[Applications installation directory.])], [MPAPPLICATIONSDIR=${withval}])
 
     oldprefix=$prefix
     if test "x$prefix" = "xNONE" ; then
@@ -477,7 +448,7 @@ AC_DEFUN([MP_PATH_APPLICATIONS],[
 	fi
 
 	AC_MSG_RESULT([$MPAPPLICATIONSDIR])
-    AC_SUBST(MPAPPLICATIONSDIR)
+    AC_SUBST([MPAPPLICATIONSDIR])
     prefix=$oldprefix
 ])
 
@@ -485,21 +456,20 @@ AC_DEFUN([MP_PATH_APPLICATIONS],[
 #---------------------------------------
 AC_DEFUN([MP_PATH_FRAMEWORKS],[
         AC_REQUIRE([MP_CHECK_INSTALLUSER])
+	AC_REQUIRE([SC_ENABLE_FRAMEWORK])
 
-    AC_ARG_WITH(frameworks-dir,[AS_HELP_STRING([--with-frameworks-dir],[Frameworks installation directory.])], MPFRAMEWORKSDIR=${withval})
+    AC_ARG_WITH([frameworks-dir],[AS_HELP_STRING([--with-frameworks-dir],[Frameworks installation directory.])], [MPFRAMEWORKSDIR=${withval}])
 
     oldprefix=$prefix
     if test "x$prefix" = "xNONE" ; then
 	prefix=$ac_default_prefix
     fi
     AC_MSG_CHECKING([for Frameworks installation directory])
-
 	if test "x$MPFRAMEWORKSDIR" = "x" ; then
 		MPFRAMEWORKSDIR="${prefix}/Library/Frameworks"
 	fi
-
 	AC_MSG_RESULT([$MPFRAMEWORKSDIR])
-    AC_SUBST(MPFRAMEWORKSDIR)
+    AC_SUBST([MPFRAMEWORKSDIR])
     prefix=$oldprefix
 ])
 
@@ -507,7 +477,8 @@ AC_DEFUN([MP_PATH_FRAMEWORKS],[
 # MP_UNIVERSAL_OPTIONS
 #---------------------------------------
 AC_DEFUN([MP_UNIVERSAL_OPTIONS],[
-  AC_ARG_WITH(universal-archs,[AS_HELP_STRING([--with-universal-archs="CPU"],[Universal CPU architectures (space separated)])], UNIVERSAL_ARCHS=${withval})
+  AC_ARG_WITH([universal-archs],[AS_HELP_STRING([--with-universal-archs="CPU"],[Universal CPU architectures (space separated)])], [UNIVERSAL_ARCHS=${withval}])
+  AC_REQUIRE([AC_C_BIGENDIAN])
 
   if test "x$UNIVERSAL_ARCHS" = "x"; then
     case "$MACOSX_VERSION" in
@@ -519,44 +490,40 @@ AC_DEFUN([MP_UNIVERSAL_OPTIONS],[
         ;;
     esac
   fi
-
   AC_MSG_CHECKING([for Universal CPU architectures])
   AC_MSG_RESULT([$UNIVERSAL_ARCHS])
-  AC_SUBST(UNIVERSAL_ARCHS)
+  AC_SUBST([UNIVERSAL_ARCHS])
 ])
 
 # MP_LIB_MD5
 #---------------------------------------
 # Check for an md5 implementation
 AC_DEFUN([MP_LIB_MD5],[
-
 	# Check for libmd from FreeBSD, which is preferred
-	AC_CHECK_LIB([md], [MD5File],[
-		AC_CHECK_HEADERS([md5.h sha.h], ,[
+	AC_CHECK_LIB([md],[MD5File],[
+		AC_CHECK_HEADERS([md5.h sha.h],[],[
 			AC_MSG_ERROR([libmd was found, but md5.h or sha.h is missing.])
 		])
 		ac_save_LIBS="$LIBS"
 		LIBS="-lmd $LIBS"
 		AC_CHECK_FUNCS([SHA1_File])
 		LIBS="$ac_save_LIBS"
-		AC_CHECK_HEADERS([ripemd.h sha256.h])
-		AC_DEFINE([HAVE_LIBMD], ,[Define if you have the `md' library (-lmd).])
-		MD5_LIBS="-lmd"]
-	)
+		AC_CHECK_HEADERS_ONCE([ripemd.h sha256.h])
+		AC_DEFINE([HAVE_LIBMD],[1],[Defined to 1 if you have the `md' library (-lmd).])
+		MD5_LIBS="-lmd"])
 	if test "x$MD5_LIBS" = "x"; then
 		# If libmd is not found, check for libcrypto from OpenSSL
-		AC_CHECK_LIB([crypto], [MD5_Update],[
-			AC_CHECK_HEADERS([openssl/md5.h openssl/sha.h], ,[
+		AC_CHECK_LIB([crypto],[MD5_Update],[
+			AC_CHECK_HEADERS([openssl/md5.h openssl/sha.h],[],[
 				AC_MSG_ERROR([libcrypto was found, but openssl/md5.h or openssl/sha.h is missing.])
 			])
-			AC_CHECK_HEADERS([openssl/ripemd.h])
+			AC_CHECK_HEADERS_ONCE([openssl/ripemd.h])
 			ac_save_LIBS="$LIBS"
 			LIBS="-lcrypto $LIBS"
 			AC_CHECK_FUNCS([SHA256_Update])
 			LIBS="$ac_save_LIBS"
-			AC_DEFINE([HAVE_LIBCRYPTO], ,[Define if you have the `crypto' library (-lcrypto).])
-			MD5_LIBS="-lcrypto"]
-		)
+			AC_DEFINE([HAVE_LIBCRYPTO],[1],[Defined to 1 if you have the `crypto' library (-lcrypto).])
+			MD5_LIBS="-lcrypto"])
 	fi
 	if test "x$MD5_LIBS" = "x"; then
 		AC_MSG_ERROR([Neither CommonCrypto, libmd nor libcrypto were found. A working md5 implementation is required.])
@@ -572,7 +539,7 @@ AC_DEFUN([MP_PROG_DAEMONDO],[
 	AC_REQUIRE([MP_CHECK_FRAMEWORK_IOKIT])
 	AC_REQUIRE([MP_CHECK_FUNCTION_CFNOTIFICATIONCENTERGETDARWINNOTIFYCENTER])
 	
-    AC_MSG_CHECKING(for whether we will build daemondo)
+    AC_MSG_CHECKING([for whether we will build daemondo])
     result=no
 	case $host_os in
 	darwin*)
@@ -587,7 +554,7 @@ AC_DEFUN([MP_PROG_DAEMONDO],[
 		;;
 	*)
 	esac
-	AC_MSG_RESULT(${result})
+	AC_MSG_RESULT([${result}])
 ])
 
 #------------------------------------------------------------------------
@@ -612,17 +579,17 @@ AC_DEFUN([MP_PROG_DAEMONDO],[
 #		TCL_PACKAGE_DIR
 #------------------------------------------------------------------------
 
-AC_DEFUN([MP_TCL_PACKAGE_DIR], [
+AC_DEFUN([MP_TCL_PACKAGE_DIR],[
 	AC_REQUIRE([MP_CHECK_INSTALLUSER])
 
-    AC_MSG_CHECKING(for Tcl package directory)
+    AC_MSG_CHECKING([for Tcl package directory])
 
-    AC_ARG_WITH(tclpackage, [  --with-tclpackage       Tcl package installation directory.], with_tclpackagedir=${withval})
+    AC_ARG_WITH([tclpackage], [AS_HELP_STRING([--with-tclpackage],[Tcl package installation directory.])], [with_tclpackagedir=${withval}])
 
     if test x"${with_tclpackagedir}" != x ; then
 	ac_cv_c_tclpkgd=${with_tclpackagedir}
     else
-	AC_CACHE_VAL(ac_cv_c_tclpkgd, [
+	AC_CACHE_VAL([ac_cv_c_tclpkgd],[
 	    # Use the value from --with-tclpackage, if it was given
 
 	    if test x"${with_tclpackagedir}" != x ; then
@@ -665,42 +632,36 @@ AC_DEFUN([MP_TCL_PACKAGE_DIR], [
     fi
 
     if test x"${ac_cv_c_tclpkgd}" = x ; then
-	AC_MSG_ERROR(Tcl package directory not found.  Please specify its location with --with-tclpackage)
+	AC_MSG_ERROR([Tcl package directory not found.  Please specify its location with --with-tclpackage])
     else
-	AC_MSG_RESULT(${ac_cv_c_tclpkgd})
+	AC_MSG_RESULT([${ac_cv_c_tclpkgd}])
     fi
 
     # Convert to a native path and substitute into the output files.
-
     PACKAGE_DIR_NATIVE=`${CYGPATH} ${ac_cv_c_tclpkgd}`
-
     TCL_PACKAGE_DIR=${PACKAGE_DIR_NATIVE}
-
-    AC_SUBST(TCL_PACKAGE_DIR)
+    AC_SUBST([TCL_PACKAGE_DIR])
 ])
 
 # MP_PROG_TCLSH
 #---------------------------------------
 AC_DEFUN([MP_PROG_TCLSH],[
-
-
 	case $host_os in
 		freebsd*)
 			# FreeBSD installs a dummy tclsh (annoying)
 			# Look for a real versioned tclsh with threads first
 			# Look for a real versioned tclsh without threads second
-			AC_PATH_PROG([TCLSH], [tclsh${TCL_VERSION}-threads tclsh${TCL_VERSION} tclsh])
+			AC_PATH_PROG([TCLSH],[tclsh${TCL_VERSION}-threads tclsh${TCL_VERSION} tclsh])
 			;;
 		*)
 			# Otherwise, look for a non-versioned tclsh
-			AC_PATH_PROG([TCLSH], [tclsh tclsh${TCL_VERSION}])
+			AC_PATH_PROG([TCLSH],[tclsh tclsh${TCL_VERSION}])
 			;;
 	esac
 	if test "x$TCLSH" = "x" ; then
 		AC_MSG_ERROR([Could not find tclsh])
 	fi
-
-	AC_SUBST(TCLSH)
+	AC_SUBST([TCLSH])
 ])
 
 # MP_TCL_PACKAGE
@@ -710,7 +671,7 @@ AC_DEFUN([MP_PROG_TCLSH],[
 #	Package name (may include the version)
 #
 # Syntax:
-#   MP_TCL_PACKAGE (package, [action-if-found], [action-if-not-found])
+#   MP_TCL_PACKAGE ([package], [action-if-found], [action-if-not-found])
 #
 # Requires:
 #	TCLSH must be set
@@ -721,8 +682,7 @@ AC_DEFUN([MP_PROG_TCLSH],[
 AC_DEFUN([MP_TCL_PACKAGE],[
 	AC_MSG_CHECKING([for Tcl $1 package])
 	package_present=`echo 'if {[[catch {package require $1}]]} {puts -nonewline 0} else {puts -nonewline 1}' | $TCLSH`
-	AS_IF([test "$package_present" = "1"], [$2], [$3])[]
-	AC_MSG_RESULT([$package_present])
+	AS_IF([test "$package_present" = "1"],[$2],[$3])[]
 ])
 
 # MP_TCL_THREAD_SUPPORT
@@ -738,13 +698,14 @@ AC_DEFUN([MP_TCL_PACKAGE],[
 #   Fails if thread support isn't available.
 #---------------------------------------
 AC_DEFUN([MP_TCL_THREAD_SUPPORT],[
+	AC_REQUIRE([MP_PROG_TCLSH])
 	AC_MSG_CHECKING([whether tclsh was compiled with threads])
 	tcl_threadenabled=`echo 'puts -nonewline [[info exists tcl_platform(threaded)]]' | $TCLSH`
 	if test "$tcl_threadenabled" = "1" ; then
 		AC_MSG_RESULT([yes])
 	else
 		AC_MSG_RESULT([no])
-		AC_MSG_ERROR([tcl wasn't compiled with threads enabled])
+		AC_MSG_WARN([tcl was not compiled with threads enabled (this should be an error, but it has been turned into a warning to facilitate work on this configure script)])
 	fi
 ])
 
@@ -762,14 +723,14 @@ AC_DEFUN([MP_TCL_THREAD_SUPPORT],[
 #   sets CFLAGS_LIBCURL and LDFLAGS_LIBCURL
 #---------------------------------------
 AC_DEFUN([MP_LIBCURL_FLAGS],[
-	AC_ARG_WITH(curlprefix,
-		   [  --with-curlprefix       base directory for the cURL install '/usr', '/usr/local',...],
-		   [  curlprefix=$withval ])
+	AC_ARG_WITH([curlprefix],
+		    [AS_HELP_STRING([--with-curlprefix],[base directory for the cURL install '/usr', '/usr/local',...])],
+		    [curlprefix=$withval])
 
 	if test "x$curlprefix" = "x"; then
-		AC_PATH_PROG([CURL_CONFIG], [curl-config])
+		AC_PATH_PROG([CURL_CONFIG],[curl-config])
 	else
-		AC_PATH_PROG([CURL_CONFIG], [curl-config], , [$curlprefix/bin])
+		AC_PATH_PROG([CURL_CONFIG],[curl-config],[],[$curlprefix/bin])
 	fi
 
 	if test "x$CURL_CONFIG" = "x"; then
@@ -786,9 +747,8 @@ AC_DEFUN([MP_LIBCURL_FLAGS],[
 		# Get rid of them.
 		LDFLAGS_LIBCURL=$($CURL_CONFIG --libs | [sed 's/-arch [A-Za-z0-9_]* //g'])
 	fi
-
-	AC_SUBST(CFLAGS_LIBCURL)
-	AC_SUBST(LDFLAGS_LIBCURL)
+	AC_SUBST([CFLAGS_LIBCURL])
+	AC_SUBST([LDFLAGS_LIBCURL])
 ])
 
 # MP_SQLITE3_FLAGS
@@ -805,17 +765,19 @@ AC_DEFUN([MP_LIBCURL_FLAGS],[
 #   sets CFLAGS_SQLITE3 and LDFLAGS_SQLITE3
 #---------------------------------------
 AC_DEFUN([MP_SQLITE3_FLAGS],[
+	AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+	AC_REQUIRE([AC_PROG_CPP])
+
     # first sqlite3 itself
-	AC_ARG_WITH(sqlite3prefix,
-		   [  --with-sqlite3prefix       base directory for the sqlite3 install '/usr', '/usr/local',...],
-		   [  sqlite3prefix=$withval ])
+	AC_ARG_WITH([sqlite3prefix],
+		    [AS_HELP_STRING([--with-sqlite3prefix],[base directory for the sqlite3 install '/usr', '/usr/local',...])],
+		    [sqlite3prefix=$withval])
 
 	if test "x$sqlite3prefix" = "x"; then
-		# see if it's somewhere like /usr that needs no extra flags
+		# see if it is somewhere like /usr that needs no extra flags
 		LDFLAGS_SQLITE3="-lsqlite3"
-		AC_CHECK_HEADER(sqlite3.h, [],[
+		AC_CHECK_HEADER([sqlite3.h],[],[
 		    # nope - try pkg-config
-			AC_PATH_PROG([PKG_CONFIG], [pkg-config])
 			if test "x$PKG_CONFIG" = "x" || ! $PKG_CONFIG --exists sqlite3; then
 				AC_MSG_ERROR([cannot find sqlite3 header])
 			else
@@ -836,16 +798,16 @@ AC_DEFUN([MP_SQLITE3_FLAGS],[
     # check if we have sqlite3ext.h, using the appropriate cppflags
     CPPFLAGS_OLD="${CPPFLAGS}"
     CPPFLAGS="${CPPFLAGS} ${CFLAGS_SQLITE3}"
-    AC_CHECK_HEADERS(sqlite3ext.h)
+    AC_CHECK_HEADERS_ONCE([sqlite3ext.h])
     CPPFLAGS="${CPPFLAGS_OLD}"
 
-	AC_SUBST(CFLAGS_SQLITE3)
-	AC_SUBST(LDFLAGS_SQLITE3)
+	AC_SUBST([CFLAGS_SQLITE3])
+	AC_SUBST([LDFLAGS_SQLITE3])
 
 	# now the sqlite Tcl bindings
-	AC_ARG_WITH(tcl-sqlite3,
-		AS_HELP_STRING([--with-tcl-sqlite3=DIR],
-			[directory for Tcl sqlite3 (default /usr/lib/sqlite3)]),
+	AC_ARG_WITH([tcl-sqlite3],
+		[AS_HELP_STRING([--with-tcl-sqlite3=DIR],
+			[directory for Tcl sqlite3 (default /usr/lib/sqlite3)])],
 		[mp_sqlite3_dir=$withval])
 
     if test "x$mp_sqlite3_dir" = "x"; then
@@ -861,32 +823,28 @@ AC_DEFUN([MP_SQLITE3_FLAGS],[
                 ;;
         esac
     fi
-
-	AC_CACHE_CHECK([for Tcl sqlite3 location], [mp_cv_sqlite3_dir],
+	AC_CACHE_CHECK([for Tcl sqlite3 location],[mp_cv_sqlite3_dir],
 		[mp_cv_sqlite3_dir=
 		test -r "${mp_sqlite3_dir}/pkgIndex.tcl" && mp_cv_sqlite3_dir=$mp_sqlite3_dir
 		])
-
 	SQLITE3_TCL_DIR=$mp_cv_sqlite3_dir
-	AC_SUBST(SQLITE3_TCL_DIR)
+	AC_SUBST([SQLITE3_TCL_DIR])
 ])
 
-dnl This macro tests if the compiler supports GCC's
-dnl __attribute__ syntax for unused variables/parameters
-AC_DEFUN([MP_COMPILER_ATTRIBUTE_UNUSED], [
+dnl# This macro tests if the compiler supports GCC's
+dnl# __attribute__ syntax for unused variables/parameters
+AC_DEFUN([MP_COMPILER_ATTRIBUTE_UNUSED],[
 	AC_MSG_CHECKING([how to mark unused variables])
-	AC_COMPILE_IFELSE(
-		[AC_LANG_SOURCE([[int a __attribute__ ((unused));]])],
-		[AC_DEFINE(UNUSED, [__attribute__((unused))], [Attribute to mark unused variables])],
-		[AC_DEFINE(UNUSED, [])])
-
-	AC_MSG_RESULT([])
-	
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[int a __attribute__ ((unused));]])],
+		[AC_DEFINE([UNUSED],[__attribute__((unused))],[Attribute to mark unused variables])],
+		[AC_DEFINE([UNUSED],[])])
+	AC_SUBST([UNUSED])
+	AC_MSG_RESULT([$UNUSED])
 ])
 
-dnl This macro ensures MP installation prefix bin/sbin paths are NOT in PATH
-dnl for configure to prevent potential problems when base/ code is updated
-dnl and ports are installed that would match needed items.
+dnl# This macro ensures MP installation prefix bin/sbin paths are NOT in PATH
+dnl# for configure to prevent potential problems when base/ code is updated
+dnl# and ports are installed that would match needed items.
 AC_DEFUN([MP_PATH_SCAN],[
 	oldprefix=$prefix
 	if test "x$prefix" = "xNONE" ; then
@@ -908,13 +866,13 @@ AC_DEFUN([MP_PATH_SCAN],[
 		fi
 	done
 	PATH=$newPATH; export PATH
-	AC_SUBST(PATH_CLEANED,$newPATH)
+	AC_SUBST([PATH_CLEANED],[$newPATH])
 	prefix=$oldprefix
 ])
 
-dnl This macro tests for sed support of -E (BSD) or -r (GNU)
+dnl# This macro tests for sed support of -E (BSD) or -r (GNU)
 AC_DEFUN([MP_SED_EXTENDED_REGEXP],[
-	AC_PATH_PROG(SED, [sed])
+	AC_REQUIRE([AC_PROG_SED])
 
 	if test "x$SED" = "x"; then
 		AC_MSG_ERROR([cannot find sed. Is sed installed?])
@@ -937,12 +895,23 @@ AC_DEFUN([MP_SED_EXTENDED_REGEXP],[
 		AC_MSG_RESULT([not available])
 		SED_EXT='N/A'
 	fi
-	AC_SUBST(SED_EXT)
+	AC_SUBST([SED_EXT])
 ])
 
-dnl This macro tests for tar support of -q (BSD) or not (GNU)
+dnl# This macro tests for tar support of -q (BSD) or not (GNU)
 AC_DEFUN([MP_TAR_FAST_READ],[
-	AC_PATH_PROG(TAR, [tar])
+	AC_REQUIRE([_AM_PROG_TAR])
+	AC_SUBST([am__tar])
+	if test "x$TAR" = "x"; then
+		if test "x$am__tar" = "x"; then
+			test -z "$am__tar"
+			AC_PATH_PROG([TAR],[tar])
+		else
+			export TAR=$am__tar
+			test ! -z "$TAR" && unset TAR
+			AC_PATH_PROG([TAR],[tar])
+		fi
+	fi
 	
 	AC_MSG_CHECKING([whether tar supports -q])
 	if $TAR -t -q -f - </dev/null 2>/dev/null ; then
@@ -952,18 +921,21 @@ AC_DEFUN([MP_TAR_FAST_READ],[
 		AC_MSG_RESULT([no (gnutar)])
 		TAR_Q=
 	fi
-	AC_SUBST(TAR_Q)
+	AC_SUBST([TAR_Q])
 ])
 
-dnl This macro tests for tar support of --no-same-owner
+dnl# This macro tests for tar support of --no-same-owner
 AC_DEFUN([MP_TAR_NO_SAME_OWNER],[
-	AC_PATH_PROG(TAR, [tar])
-	AC_PATH_PROG(GNUTAR, [gnutar])
+	AC_REQUIRE([_AM_PROG_TAR])
+	AC_REQUIRE([MP_TAR_FAST_READ])
+	if test "x$GNUTAR" = "x"; then
+		AC_PATH_PROG([GNUTAR],[gnutar])
+	fi
 	
 	AC_MSG_CHECKING([for which tar variant to use])
-	AS_IF([test -n "$GNUTAR"], [TAR_CMD=$GNUTAR], [TAR_CMD=$TAR])
+	AS_IF([test -n "$GNUTAR"],[TAR_CMD=$GNUTAR],[TAR_CMD=$TAR])
 	AC_MSG_RESULT([$TAR_CMD])
-	AC_SUBST(TAR_CMD)
+	AC_SUBST([TAR_CMD])
 
 	AC_MSG_CHECKING([for $TAR_CMD --no-same-owner support])
 	[no_same_owner_support=`$TAR_CMD --help 2>&1 | grep no-same-owner`]
@@ -975,13 +947,17 @@ AC_DEFUN([MP_TAR_NO_SAME_OWNER],[
 	fi
 ])
 
-dnl This macro tests for GNU patch
+dnl# This macro tests for GNU patch
 AC_DEFUN([MP_PATCH_GNU_VERSION],[
-	AC_PATH_PROG(PATCH, [patch])
-	AC_PATH_PROG(GNUPATCH, [gpatch])
+	if test "x$PATCH" = "x"; then
+		AC_PATH_PROG([PATCH],[patch])
+	fi
+	if test "x$GNUPATCH" = "x"; then
+		AC_PATH_PROG([GNUPATCH],[gnupatch gpatch])
+	fi
 	
 	AC_MSG_CHECKING([for GNU (FSF) patch])
-	AS_IF([test -n "$GNUPATCH"], [PATCH_CMD=$GNUPATCH], [PATCH_CMD=$PATCH])
+	AS_IF([test -n "$GNUPATCH"],[PATCH_CMD=$GNUPATCH], [PATCH_CMD=$PATCH])
 	[fsf_version=`$PATCH_CMD --version 2>&1 | grep "Free Software Foundation"`]
 	if test -z "$fsf_version" ; then
 		AC_MSG_RESULT([none])
@@ -1013,31 +989,34 @@ AC_DEFUN([MP_PATCH_GNU_VERSION],[
 #		READLINK_IS_NOT_P1003_1A
 #
 #------------------------------------------------------------------------
-AC_DEFUN([MP_CHECK_READLINK_IS_P1003_1A], [
+AC_DEFUN([MP_CHECK_READLINK_IS_P1003_1A],[
+	AC_REQUIRE([AC_TYPE_SIZE_T])
+	AC_REQUIRE([AC_TYPE_SSIZE_T])
+	AC_CHECK_HEADERS_ONCE([unistd.h])
 	AC_MSG_CHECKING([if readlink conforms to POSIX 1003.1a])
 
-	AC_CACHE_VAL(mp_cv_readlink_is_posix_1003_1a, [
+	AC_CACHE_VAL([mp_cv_readlink_is_posix_1003_1a],[
+		AC_LANG_PUSH([C])
 		AC_COMPILE_IFELSE([
-			AC_LANG_PROGRAM([
+			AC_LANG_PROGRAM([[
 					#include <unistd.h>
 					ssize_t readlink(const char *, char *, size_t);
-				], [
-			])
-			], [
+				]],[[
+			]])
+			],[
 				mp_cv_readlink_is_posix_1003_1a="yes"
-			], [
+			],[
 				mp_cv_readlink_is_posix_1003_1a="no"
-			]
-		)
+			])
+		AC_LANG_POP
 	])
 
-	AC_MSG_RESULT(${mp_cv_readlink_is_posix_1003_1a})
+	AC_MSG_RESULT([${mp_cv_readlink_is_posix_1003_1a}])
 
 	if test x"${mp_cv_readlink_is_posix_1003_1a}" = "xno"; then
-		AC_DEFINE([READLINK_IS_NOT_P1003_1A], [], [Define to 1 if readlink does not conform with POSIX 1003.1a (where third argument is a size_t and return value is a ssize_t)])
+		AC_DEFINE([READLINK_IS_NOT_P1003_1A],[],[Define to 1 if readlink does not conform with POSIX 1003.1a (where third argument is a size_t and return value is a ssize_t)])
 	fi
-
-	AC_SUBST(READLINK_IS_NOT_P1003_1A)
+	AC_SUBST([READLINK_IS_NOT_P1003_1A])
 ])
 
 #------------------------------------------------------------------------
@@ -1059,7 +1038,7 @@ AC_DEFUN([MP_CHECK_READLINK_IS_P1003_1A], [
 #------------------------------------------------------------------------
 AC_DEFUN([MP_WERROR],[
 	AC_REQUIRE([AC_PROG_CC])
-	AC_ARG_ENABLE(werror, AS_HELP_STRING([--enable-werror],[Add -Werror to CFLAGS. Used for development.]), [enable_werror=${enableval}], [enable_werror=no])
+	AC_ARG_ENABLE([werror],[AS_HELP_STRING([--enable-werror],[Add -Werror to CFLAGS. Used for development.])],[enable_werror=${enableval}],[enable_werror=no])
 	if test x"$enable_werror" != "xno"; then
 		CFLAGS_WERROR="-Werror"
 	else
@@ -1088,54 +1067,49 @@ AC_DEFUN([MP_WERROR],[
 #       sets mp_sqlite_version_ge_$1 to yes or no
 #
 #------------------------------------------------------------------------
-AC_DEFUN([MP_CHECK_SQLITE_VERSION], [
+AC_DEFUN([MP_CHECK_SQLITE_VERSION],[
 	AC_REQUIRE([MP_SQLITE3_FLAGS])
+	AC_REQUIRE([AC_PROG_CPP])
+	AC_CHECK_HEADERS_ONCE([sqlite3.h])
 
 	AC_MSG_CHECKING([for SQLite >= $1])
 
 	mp_check_sqlite_version_cppflags_save=$CPPFLAGS
 	CPPFLAGS="$CPPFLAGS $CFLAGS_SQLITE3"
 
-	AC_CACHE_VAL(mp_cv_sqlite_version_defined, [
-		AC_PREPROC_IFELSE(
-			[AC_LANG_SOURCE(
-				[[
+	AC_CACHE_VAL([mp_cv_sqlite_version_defined],[
+		AC_LANG_PUSH([C])
+		AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 					#include <sqlite3.h>
 					#ifndef SQLITE_VERSION_NUMBER
-					#  error "SQLITE_VERSION_NUMBER undefined"
+						#error "SQLITE_VERSION_NUMBER undefined"
 					#endif
-				]]
-			)],
+			]])],
 			[mp_cv_sqlite_version_defined="yes"],
-			[AC_MSG_ERROR("SQLITE_VERSION_NUMBER undefined or sqlite3.h not found")]
-		)
+			[AC_MSG_ERROR("SQLITE_VERSION_NUMBER undefined or sqlite3.h not found")])
+		AC_LANG_POP
 	])
-
 	if test x"${mp_cv_sqlite_version_defined}" = "xno"; then
 		AC_MSG_RESULT([SQLite version not found])
 		mp_sqlite_version_ge_$1="no"
 	else
-		AC_CACHE_VAL(mp_cv_sqlite_version_ge_$1, [
-			AC_PREPROC_IFELSE(
-				[AC_LANG_SOURCE(
-					[[
+		AC_CACHE_VAL([mp_cv_sqlite_version_ge_$1],[
+			AC_LANG_PUSH([C])
+			AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 						#include <sqlite3.h>
 						#if (SQLITE_VERSION_NUMBER >= $1)
 						/* Everything is fine */
 						#else
-						#  error "SQLite version too old"
+							#error "SQLite version too old"
 						#endif
-					]]
-				)],
+				]])],
 				[mp_cv_sqlite_version_ge_$1="yes"],
-				[mp_cv_sqlite_version_ge_$1="no"]
-			)
+				[mp_cv_sqlite_version_ge_$1="no"])
+			AC_LANG_POP
 		])
-
-		AC_MSG_RESULT(${mp_cv_sqlite_version_ge_$1})
+		AC_MSG_RESULT([${mp_cv_sqlite_version_ge_$1}])
 		mp_sqlite_version_ge_$1=${mp_cv_sqlite_version_ge_$1}
 	fi
-
 	CPPFLAGS=$mp_check_sqlite_version_cppflags_save
 ])
 
