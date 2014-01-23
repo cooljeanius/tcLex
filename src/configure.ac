@@ -70,6 +70,7 @@ CC=${TCL_CC}
 if test "x" = "y"; then
   dnl# keep autoscan happy
   AC_CHECK_HEADERS([float.h limits.h net/errno.h sys/param.h values.h])
+  AC_HEADER_SYS_WAIT
 else
   dnl# these should already be cached so only check once
   AC_CHECK_HEADERS_ONCE([float.h limits.h net/errno.h sys/param.h values.h])
@@ -79,7 +80,7 @@ else
   fi
 fi
 AC_HEADER_DIRENT
-AC_HEADER_WAIT
+AC_HEADER_TIME
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h pwd.h \
                   signal.h stdarg.h stddef.h stdio.h sys/file.h sys/socket.h \
                   sys/time.h tclInt.h Tcl/tclInt.h \
@@ -89,7 +90,7 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h pwd.h \
                   tclIntDecls.h Tcl/tclIntDecls.h \
                   Tcl/tcl-private/tclIntDecls.h tclIntPlatDecls.h \
                   Tcl/tclIntPlatDecls.h Tcl/tcl-private/tclIntPlatDecls.h \
-                  tclRegexp.h utime.h])
+                  tclRegexp.h tclTomMathDecls.h utime.h])
 if test "x${HAVE_TCLINT_H}" = "x" -a "x${ac_cv_header_tclInt_h}" = "xno"; then
 	AC_MSG_WARN([tclInt.h not found, compilation will most likely fail without it])
 fi

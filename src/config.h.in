@@ -49,11 +49,20 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* Defined to 1 if we have net/errno.h */
+/* Define to 1 if you have the <net/errno.h> header file. */
 #undef HAVE_NET_ERRNO_H
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
+
+/* Define to 1 if you have the <pwd.h> header file. */
+#undef HAVE_PWD_H
+
+/* Define to 1 if you have the <signal.h> header file. */
+#undef HAVE_SIGNAL_H
+
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #undef HAVE_STDDEF_H
@@ -99,6 +108,9 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#undef HAVE_SYS_WAIT_H
+
 /* Define to 1 if you have the <tclIntDecls.h> header file. */
 #undef HAVE_TCLINTDECLS_H
 
@@ -113,6 +125,9 @@
 
 /* Define to 1 if you have the <tclRegexp.h> header file. */
 #undef HAVE_TCLREGEXP_H
+
+/* Define to 1 if you have the <tclTomMathDecls.h> header file. */
+#undef HAVE_TCLTOMMATHDECLS_H
 
 /* Define to 1 if you have the <tclUnixPort.h> header file. */
 #undef HAVE_TCLUNIXPORT_H
@@ -219,6 +234,9 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
 
 /* Enable extensions on AIX 3, Interix.  */
 #ifndef _ALL_SOURCE

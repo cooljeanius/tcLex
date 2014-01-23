@@ -21,7 +21,7 @@ VERSION_DEFINE	= TCLEX_VERSION
 OBJS		= tcLex.o \
 		  tcLexRE.o
 
-# MANS		= tclex.n
+tcl_MANS_COMMENTED_OUT = tclex.n
 
 #-------------------------------------------------
 INSTALL         = @INSTALL@
@@ -65,11 +65,10 @@ pkgIndex.tcl:
 	else true; fi;) | \
 	echo 'package ifneeded $(PROJECT) $(PROJECT_VERSION) [list load [file join $$dir $(DLL).$(PROJECT_VERSION)] $(PROJECT)]' > pkgIndex.tcl
 
-install: all
+install_tclex: all
 	if test ! -d $(PROJECTDIR); then mkdir $(PROJECTDIR); fi
 	$(INSTALL_PROGRAM) $(DLL) $(PROJECTDIR)/$(DLL).$(PROJECT_VERSION)
 	$(INSTALL_DATA) pkgIndex.tcl $(PROJECTDIR)/pkgIndex.tcl
-#	$(INSTALL_DATA) $(MANS) $(MAN_INSTALL_DIR)/
 
 test: all
 	true
@@ -81,3 +80,6 @@ distclean-local: clean-local
 	rm -f Makefile config.status $(DLL)
 
 DISTCLEANFILES = Makefile.orig
+
+# Hack: these should not be treated as targets in the first place:
+.PHONY: -c -m 644

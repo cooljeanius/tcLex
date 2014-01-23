@@ -242,7 +242,7 @@ typedef struct Namespace {
 				 * flags NS_DYING and NS_DEAD listed below. */
     int activationCount; /* Number of "activations" or active call
 				          * frames for this namespace that are on the
-				          * Tcl call stack. The namespace won't be
+				          * Tcl call stack. The namespace will NOT be
 				          * freed until activationCount becomes zero. */
     int refCount; /* Count of references by namespaceName
 				   * objects. The namespace cannot be freed until
@@ -259,28 +259,28 @@ typedef struct Namespace {
 				               * currently in this namespace. Indexed by
 				               * strings; values have type (Var *). */
     char **exportArrayPtr; /* Points to an array of string patterns
-				 * specifying which commands are exported. A
-				 * pattern may include "string match" style
-				 * wildcard characters to specify multiple
-				 * commands; however, no namespace qualifiers
-				 * are allowed. NULL if no export patterns are
-				 * registered. */
-    int numExportPatterns;	/* Number of export patterns currently
-				 * registered using "namespace export". */
-    int maxExportPatterns;	/* Mumber of export patterns for which space
-				 * is currently allocated. */
-    int cmdRefEpoch;		/* Incremented if a newly added command
-				 * shadows a command for which this namespace
-				 * has already cached a Command* pointer; this
-				 * causes all its cached Command* pointers to
-				 * be invalidated. */
-    int resolverEpoch;		/* Incremented whenever (a) the name
-				 * resolution rules change for this namespace
-				 * or (b) a newly added command shadows a
-				 * command that is compiled to bytecodes. This
-				 * invalidates all byte codes compiled in the
-				 * namespace, causing the code to be
-				 * recompiled under the new rules.*/
+				            * specifying which commands are exported. A
+				            * pattern may include "string match" style
+				            * wildcard characters to specify multiple
+							* commands; however, no namespace qualifiers
+				            * are allowed. NULL if no export patterns are
+				            * registered. */
+    int numExportPatterns; /* Number of export patterns currently
+				            * registered using "namespace export". */
+    int maxExportPatterns; /* Mumber of export patterns for which space
+				            * is currently allocated. */
+    int cmdRefEpoch; /* Incremented if a newly added command
+				      * shadows a command for which this namespace
+					  * has already cached a Command* pointer; this
+				      * causes all its cached Command* pointers to
+				      * be invalidated. */
+    int resolverEpoch; /* Incremented whenever (a) the name
+				        * resolution rules change for this namespace
+				        * or (b) a newly added command shadows a
+				        * command that is compiled to bytecodes. This
+				        * invalidates all byte codes compiled in the
+						* namespace, causing the code to be
+						* recompiled under the new rules. */
     Tcl_ResolveCmdProc *cmdResProc;
 				/* If non-null, this procedure overrides the
 				 * usual command resolution mechanism in Tcl.
@@ -301,17 +301,17 @@ typedef struct Namespace {
 				 * LookupCompiledLocal to resolve variable
 				 * references within the namespace at compile
 				 * time. */
-    int exportLookupEpoch;	/* Incremented whenever a command is added to
-				 * a namespace, removed from a namespace or
-				 * the exports of a namespace are changed.
-				 * Allows TIP#112-driven command lists to be
-				 * validated efficiently. */
-    Tcl_Ensemble *ensembles;	/* List of structures that contain the details
-				 * of the ensembles that are implemented on
-				 * top of this namespace. */
+    int exportLookupEpoch; /* Incremented whenever a command is added to
+				            * a namespace, removed from a namespace or
+				            * the exports of a namespace are changed.
+				            * Allows TIP#112-driven command lists to be
+				            * validated efficiently. */
+    Tcl_Ensemble *ensembles; /* List of structures that contain the details
+				              * of the ensembles that are implemented on
+				              * top of this namespace. */
     Tcl_Obj *unknownHandlerPtr;	/* A script fragment to be used when command
-				 * resolution in this namespace fails. TIP
-				 * 181. */
+				                 * resolution in this namespace fails. TIP
+				                 * 181. */
     int commandPathLength;	/* The length of the explicit path. */
     NamespacePathEntry *commandPathArray;
 				/* The explicit path of the namespace as an
@@ -326,14 +326,14 @@ typedef struct Namespace {
  */
 
 struct NamespacePathEntry {
-    Namespace *nsPtr;		/* What does this path entry point to? If it
-				 * is NULL, this path entry points is
-				 * redundant and should be skipped. */
-    Namespace *creatorNsPtr;	/* Where does this path entry point from? This
-				 * allows for efficient invalidation of
-				 * references when the path entry's target
-				 * updates its current list of defined
-				 * commands. */
+    Namespace *nsPtr; /* What does this path entry point to? If it
+				       * is NULL, this path entry points is
+				       * redundant and should be skipped. */
+    Namespace *creatorNsPtr; /* Where does this path entry point from? This
+				              * allows for efficient invalidation of
+				              * references when the path entry's target
+				              * updates its current list of defined
+				              * commands. */
     NamespacePathEntry *prevPtr, *nextPtr;
 				/* Linked list pointers or NULL at either end
 				 * of the list that hangs off Namespace's
@@ -343,22 +343,22 @@ struct NamespacePathEntry {
 /*
  * Flags used to represent the status of a namespace:
  *
- * NS_DYING -	1 means Tcl_DeleteNamespace has been called to delete the
- *		namespace but there are still active call frames on the Tcl
- *		stack that refer to the namespace. When the last call frame
- *		referring to it has been popped, its variables and command
- *		will be destroyed and it will be marked "dead" (NS_DEAD). The
- *		namespace can no longer be looked up by name.
- * NS_DEAD -	1 means Tcl_DeleteNamespace has been called to delete the
- *		namespace and no call frames still refer to it. Its variables
- *		and command have already been destroyed. This bit allows the
- *		namespace resolution code to recognize that the namespace is
- *		"deleted". When the last namespaceName object in any byte code
- *		unit that refers to the namespace has been freed (i.e., when
- *		the namespace's refCount is 0), the namespace's storage will
- *		be freed.
- * NS_KILLED    1 means that TclTeardownNamespace has already been called on
- *              this namespace and it should not be called again [Bug 1355942]
+ * NS_DYING -  1 means Tcl_DeleteNamespace has been called to delete the
+ *		       namespace but there are still active call frames on the Tcl
+ *		       stack that refer to the namespace. When the last call frame
+ *		       referring to it has been popped, its variables and command
+ *		       will be destroyed and it will be marked "dead" (NS_DEAD). The
+ *		       namespace can no longer be looked up by name.
+ * NS_DEAD -   1 means Tcl_DeleteNamespace has been called to delete the
+ *		       namespace and no call frames still refer to it. Its variables
+ *		       and command have already been destroyed. This bit allows the
+ *		       namespace resolution code to recognize that the namespace is
+ *		       "deleted". When the last namespaceName object in any byte code
+ *		       unit that refers to the namespace has been freed (i.e., when
+ *		       the namespace's refCount is 0), the namespace's storage will
+ *		       be freed.
+ * NS_KILLED - 1 means that TclTeardownNamespace has already been called on
+ *             this namespace and it should not be called again [Bug 1355942]
  */
 
 #define NS_DYING	0x01
@@ -368,10 +368,10 @@ struct NamespacePathEntry {
 /*
  * Flags passed to TclGetNamespaceForQualName:
  *
- * TCL_GLOBAL_ONLY		- (see tcl.h) Look only in the global ns.
+ * TCL_GLOBAL_ONLY		    - (see tcl.h) Look only in the global ns.
  * TCL_NAMESPACE_ONLY		- (see tcl.h) Look only in the context ns.
  * TCL_CREATE_NS_IF_UNKNOWN	- Create unknown namespaces.
- * TCL_FIND_ONLY_NS		- The name sought is a namespace name.
+ * TCL_FIND_ONLY_NS		    - The name sought is a namespace name.
  */
 
 #define TCL_CREATE_NS_IF_UNKNOWN	0x800
@@ -384,18 +384,18 @@ struct NamespacePathEntry {
  */
 
 typedef struct {
-    Namespace *nsPtr;		/* The namespace backing the ensemble which
-				 * this is a subcommand of. */
-    int epoch;			/* Used to confirm when the data in this
+    Namespace *nsPtr; /* The namespace backing the ensemble which
+				       * this is a subcommand of. */
+    int epoch;	/* Used to confirm when the data in this
 				 * really structure matches up with the
 				 * ensemble. */
-    Tcl_Command token;		/* Reference to the comamnd for which this
-				 * structure is a cache of the resolution. */
-    char *fullSubcmdName;	/* The full (local) name of the subcommand,
-				 * allocated with ckalloc(). */
-    Tcl_Obj *realPrefixObj;	/* Object containing the prefix words of the
-				 * command that implements this ensemble
-				 * subcommand. */
+    Tcl_Command token; /* Reference to the comamnd for which this
+				        * structure is a cache of the resolution. */
+    char *fullSubcmdName; /* The full (local) name of the subcommand,
+				           * allocated with ckalloc(). */
+    Tcl_Obj *realPrefixObj; /* Object containing the prefix words of the
+				             * command that implements this ensemble
+							 * subcommand. */
 } EnsembleCmdRep;
 
 /*
@@ -417,15 +417,15 @@ typedef struct {
  */
 
 typedef struct VarTrace {
-    Tcl_VarTraceProc *traceProc;/* Procedure to call when operations given by
-				 * flags are performed on variable. */
+    Tcl_VarTraceProc *traceProc; /* Procedure to call when operations given by
+				                  * flags are performed on variable. */
     ClientData clientData;	/* Argument to pass to proc. */
-    int flags;			/* What events the trace procedure is
+    int flags;	/* What events the trace procedure is
 				 * interested in: OR-ed combination of
 				 * TCL_TRACE_READS, TCL_TRACE_WRITES,
 				 * TCL_TRACE_UNSETS and TCL_TRACE_ARRAY. */
-    struct VarTrace *nextPtr;	/* Next in list of traces associated with a
-				 * particular variable. */
+    struct VarTrace *nextPtr; /* Next in list of traces associated with a
+				               * particular variable. */
 } VarTrace;
 
 /*
@@ -439,16 +439,16 @@ typedef struct CommandTrace {
 				/* Procedure to call when operations given by
 				 * flags are performed on command. */
     ClientData clientData;	/* Argument to pass to proc. */
-    int flags;			/* What events the trace procedure is
+    int flags;	/* What events the trace procedure is
 				 * interested in: OR-ed combination of
 				 * TCL_TRACE_RENAME, TCL_TRACE_DELETE. */
     struct CommandTrace *nextPtr;
 				/* Next in list of traces associated with a
 				 * particular command. */
-    int refCount;		/* Used to ensure this structure is not
-				 * deleted too early. Keeps track of how many
-				 * pieces of code have a pointer to this
-				 * structure. */
+    int refCount; /* Used to ensure this structure is not
+				   * deleted too early. Keeps track of how many
+				   * pieces of code have a pointer to this
+				   * structure. */
 } CommandTrace;
 
 /*
@@ -463,12 +463,12 @@ typedef struct ActiveCommandTrace {
     struct ActiveCommandTrace *nextPtr;
 				/* Next in list of all active command traces
 				 * for the interpreter, or NULL if no more. */
-    CommandTrace *nextTracePtr;	/* Next trace to check after current trace
-				 * procedure returns; if this trace gets
-				 * deleted, must update pointer to avoid using
-				 * free'd memory. */
-    int reverseScan;		/* Boolean set true when traces are scanning
-				 * in reverse order. */
+    CommandTrace *nextTracePtr; /* Next trace to check after current trace
+				                 * procedure returns; if this trace gets
+				                 * deleted, must update pointer to avoid using
+				                 * free'd memory. */
+    int reverseScan; /* Boolean set true when traces are scanning
+				      * in reverse order. */
 } ActiveCommandTrace;
 
 /*
@@ -484,10 +484,10 @@ typedef struct ActiveVarTrace {
     struct ActiveVarTrace *nextPtr;
 				/* Next in list of all active variable traces
 				 * for the interpreter, or NULL if no more. */
-    VarTrace *nextTracePtr;	/* Next trace to check after current trace
-				 * procedure returns; if this trace gets
-				 * deleted, must update pointer to avoid using
-				 * free'd memory. */
+    VarTrace *nextTracePtr; /* Next trace to check after current trace
+				             * procedure returns; if this trace gets
+				             * deleted, must update pointer to avoid using
+				             * free'd memory. */
 } ActiveVarTrace;
 
 /*
@@ -496,22 +496,22 @@ typedef struct ActiveVarTrace {
  */
 
 typedef struct ArraySearch {
-    int id;			/* Integer id used to distinguish among
+    int id;		/* Integer id used to distinguish among
 				 * multiple concurrent searches for the same
 				 * array. */
-    struct Var *varPtr;		/* Pointer to array variable that is being
-				 * searched. */
-    Tcl_HashSearch search;	/* Info kept by the hash module about progress
-				 * through the array. */
-    Tcl_HashEntry *nextEntry;	/* Non-null means this is the next element to
-				 * be enumerated (it is leftover from the
-				 * Tcl_FirstHashEntry call or from an "array
-				 * anymore" command). NULL means must call
-				 * Tcl_NextHashEntry to get value to
-				 * return. */
-    struct ArraySearch *nextPtr;/* Next in list of all active searches for
-				 * this variable, or NULL if this is the last
-				 * one. */
+    struct Var *varPtr;	/* Pointer to array variable that is being
+				         * searched. */
+    Tcl_HashSearch search; /* Info kept by the hash module about progress
+				            * through the array. */
+    Tcl_HashEntry *nextEntry; /* Non-null means this is the next element to
+				               * be enumerated (it is leftover from the
+				               * Tcl_FirstHashEntry call or from an "array
+				               * anymore" command). NULL means must call
+							   * Tcl_NextHashEntry to get value to
+				               * return. */
+    struct ArraySearch *nextPtr; /* Next in list of all active searches for
+				                  * this variable, or NULL if this is the last
+				                  * one. */
 } ArraySearch;
 
 /*
@@ -524,37 +524,37 @@ typedef struct ArraySearch {
  */
 
 typedef struct Var {
-    int flags;			/* Miscellaneous bits of information about
+    int flags;	/* Miscellaneous bits of information about
 				 * variable. See below for definitions. */
     union {
-	Tcl_Obj *objPtr;	/* The variable's object value. Used for
-				 * scalar variables and array elements. */
-	TclVarHashTable *tablePtr;/* For array variables, this points to
-				 * information about the hash table used to
-				 * implement the associative array. Points to
-				 * ckalloc-ed data. */
-	struct Var *linkPtr;	/* If this is a global variable being referred
-				 * to in a procedure, or a variable created by
-				 * "upvar", this field points to the
-				 * referenced variable's Var struct. */
+	Tcl_Obj *objPtr; /* The variable's object value. Used for
+				      * scalar variables and array elements. */
+	TclVarHashTable *tablePtr; /* For array variables, this points to
+				                * information about the hash table used to
+				                * implement the associative array. Points to
+				                * ckalloc-ed data. */
+	struct Var *linkPtr; /* If this is a global variable being referred
+				          * to in a procedure, or a variable created by
+				          * "upvar", this field points to the
+				          * referenced variable's Var struct. */
     } value;
 } Var;
 
 typedef struct VarInHash {
     Var var;
-    int refCount;		/* Counts number of active uses of this
-				 * variable: 1 for the entry in the hash
-				 * table, 1 for each additional variable whose
-				 * linkPtr points here, 1 for each nested
-				 * trace active on variable, and 1 if the
-				 * variable is a namespace variable. This
-				 * record cannot be deleted until refCount
-				 * becomes 0. */
-    Tcl_HashEntry entry;	/* The hash table entry that refers to this
-				 * variable. This is used to find the name of
-				 * the variable and to delete it from its
-				 * hashtable if it is no longer needed. It
-				 * also holds the variable's name. */
+    int refCount; /* Counts number of active uses of this
+				   * variable: 1 for the entry in the hash
+				   * table, 1 for each additional variable whose
+				   * linkPtr points here, 1 for each nested
+				   * trace active on variable, and 1 if the
+				   * variable is a namespace variable. This
+				   * record cannot be deleted until refCount
+				   * becomes 0. */
+    Tcl_HashEntry entry; /* The hash table entry that refers to this
+				          * variable. This is used to find the name of
+				          * the variable and to delete it from its
+				          * hashtable if it is no longer needed. It
+				          * also holds the variable's name. */
 } VarInHash;
 
 /*
@@ -562,11 +562,11 @@ typedef struct VarInHash {
  * mutually exclusive and give the "type" of the variable. If none is set,
  * this is a scalar variable.
  *
- * VAR_ARRAY -			1 means this is an array variable rather than
+ * VAR_ARRAY -	1 means this is an array variable rather than
  *				a scalar variable or link. The "tablePtr"
  *				field points to the array's hashtable for its
  *				elements.
- * VAR_LINK -			1 means this Var structure contains a pointer
+ * VAR_LINK -	1 means this Var structure contains a pointer
  *				to another Var structure that either has the
  *				real value or is itself another VAR_LINK
  *				pointer. Variables like this come about
@@ -577,25 +577,25 @@ typedef struct VarInHash {
  * Flags that indicate the type and status of storage; none is set for
  * compiled local variables (Var structs).
  *
- * VAR_IN_HASHTABLE -		1 means this variable is in a hashtable and
- *				the Var structure is malloced. 0 if it is a
- *				local variable that was assigned a slot in a
- *				procedure frame by the compiler so the Var
- *				storage is part of the call frame.
- * VAR_DEAD_HASH		1 means that this var's entry in the hashtable
- *				has already been deleted.
- * VAR_ARRAY_ELEMENT -		1 means that this variable is an array
- *				element, so it is not legal for it to be an
- *				array itself (the VAR_ARRAY flag had better
- *				not be set).
- * VAR_NAMESPACE_VAR -		1 means that this variable was declared as a
- *				namespace variable. This flag ensures it
- *				persists until its namespace is destroyed or
- *				until the variable is unset; it will persist
- *				even if it has not been initialized and is
- *				marked undefined. The variable's refCount is
- *				incremented to reflect the "reference" from
- *				its namespace.
+ * VAR_IN_HASHTABLE -  1 means this variable is in a hashtable and
+ *				       the Var structure is malloced. 0 if it is a
+ *				       local variable that was assigned a slot in a
+ *				       procedure frame by the compiler so the Var
+ *				       storage is part of the call frame.
+ * VAR_DEAD_HASH -     1 means that this var's entry in the hashtable
+ *				       has already been deleted.
+ * VAR_ARRAY_ELEMENT - 1 means that this variable is an array
+ *				       element, so it is not legal for it to be an
+ *				       array itself (the VAR_ARRAY flag had better
+ *				       not be set).
+ * VAR_NAMESPACE_VAR - 1 means that this variable was declared as a
+ *				       namespace variable. This flag ensures it
+ *				       persists until its namespace is destroyed or
+ *				       until the variable is unset; it will persist
+ *				       even if it has not been initialized and is
+ *				       marked undefined. The variable's refCount is
+ *				       incremented to reflect the "reference" from
+ *				       its namespace.
  *
  * Flag values relating to the variable's trace and search status.
  *
@@ -603,25 +603,25 @@ typedef struct VarInHash {
  * VAR_TRACED_WRITE
  * VAR_TRACED_UNSET
  * VAR_TRACED_ARRAY
- * VAR_TRACE_ACTIVE -		1 means that trace processing is currently
- *				underway for a read or write access, so new
- *				read or write accesses should not cause trace
- *				procedures to be called and the variable cannot
- *				be deleted.
+ * VAR_TRACE_ACTIVE - 1 means that trace processing is currently
+ *				      underway for a read or write access, so new
+ *				      read or write accesses should not cause trace
+ *				      procedures to be called and the variable cannot
+ *				      be deleted.
  * VAR_SEARCH_ACTIVE
  *
  * The following additional flags are used with the CompiledLocal type defined
  * below:
  *
- * VAR_ARGUMENT -		1 means that this variable holds a procedure
- *				argument.
- * VAR_TEMPORARY -		1 if the local variable is an anonymous
- *				temporary variable. Temporaries have a NULL
- *				name.
- * VAR_RESOLVED -		1 if name resolution has been done for this
- *				variable.
- * VAR_IS_ARGS			1 if this variable is the last argument and is
- *				named "args".
+ * VAR_ARGUMENT -  1 means that this variable holds a procedure
+ *				   argument.
+ * VAR_TEMPORARY - 1 if the local variable is an anonymous
+ *				   temporary variable. Temporaries have a NULL
+ *				   name.
+ * VAR_RESOLVED -  1 if name resolution has been done for this
+ *				   variable.
+ * VAR_IS_ARGS -   1 if this variable is the last argument and is
+ *				   named "args".
  */
 
 /*
@@ -832,18 +832,18 @@ typedef struct CompiledLocal {
 				/* Next compiler-recognized local variable for
 				 * this procedure, or NULL if this is the last
 				 * local. */
-    int nameLength;		/* The number of characters in local
-				 * variable's name. Used to speed up variable
-				 * lookups. */
-    int frameIndex;		/* Index in the array of compiler-assigned
-				 * variables in the procedure call frame. */
-    int flags;			/* Flag bits for the local variable. Same as
+    int nameLength; /* The number of characters in local
+				     * variable's name. Used to speed up variable
+				     * lookups. */
+    int frameIndex; /* Index in the array of compiler-assigned
+				     * variables in the procedure call frame. */
+    int flags;	/* Flag bits for the local variable. Same as
 				 * the flags for the Var structure above,
 				 * although only VAR_ARGUMENT, VAR_TEMPORARY,
 				 * and VAR_RESOLVED make sense. */
-    Tcl_Obj *defValuePtr;	/* Pointer to the default value of an
-				 * argument, if any. NULL if not an argument
-				 * or, if an argument, no default value. */
+    Tcl_Obj *defValuePtr; /* Pointer to the default value of an
+				           * argument, if any. NULL if not an argument
+				           * or, if an argument, no default value. */
     Tcl_ResolvedVarInfo *resolveInfo;
 				/* Customized variable resolution info
 				 * supplied by the Tcl_ResolveCompiledVarProc
@@ -851,11 +851,11 @@ typedef struct CompiledLocal {
 				 * is marked by a unique ClientData tag during
 				 * compilation, and that same tag is used to
 				 * find the variable at runtime. */
-    char name[4];		/* Name of the local variable starts here. If
-				 * the name is NULL, this will just be '\0'.
-				 * The actual size of this field will be large
-				 * enough to hold the name. MUST BE THE LAST
-				 * FIELD IN THE STRUCTURE! */
+    char name[4]; /* Name of the local variable starts here. If
+				   * the name is NULL, this will just be '\0'.
+				   * The actual size of this field will be large
+				   * enough to hold the name. MUST BE THE LAST
+				   * FIELD IN THE STRUCTURE! */
 } CompiledLocal;
 
 /*
@@ -865,32 +865,32 @@ typedef struct CompiledLocal {
  */
 
 typedef struct Proc {
-    struct Interp *iPtr;	/* Interpreter for which this command is
-				 * defined. */
-    int refCount;		/* Reference count: 1 if still present in
-				 * command table plus 1 for each call to the
-				 * procedure that is currently active. This
-				 * structure can be freed when refCount
-				 * becomes zero. */
-    struct Command *cmdPtr;	/* Points to the Command structure for this
-				 * procedure. This is used to get the
-				 * namespace in which to execute the
-				 * procedure. */
-    Tcl_Obj *bodyPtr;		/* Points to the ByteCode object for
-				 * procedure's body command. */
+    struct Interp *iPtr; /* Interpreter for which this command is
+				          * defined. */
+    int refCount; /* Reference count: 1 if still present in
+				   * command table plus 1 for each call to the
+				   * procedure that is currently active. This
+				   * structure can be freed when refCount
+				   * becomes zero. */
+    struct Command *cmdPtr; /* Points to the Command structure for this
+				             * procedure. This is used to get the
+				             * namespace in which to execute the
+				             * procedure. */
+    Tcl_Obj *bodyPtr; /* Points to the ByteCode object for
+				       * procedure's body command. */
     int numArgs;		/* Number of formal parameters. */
-    int numCompiledLocals;	/* Count of local variables recognized by the
-				 * compiler including arguments and
-				 * temporaries. */
+    int numCompiledLocals; /* Count of local variables recognized by the
+				            * compiler including arguments and
+				            * temporaries. */
     CompiledLocal *firstLocalPtr;
 				/* Pointer to first of the procedure's
 				 * compiler-allocated local variables, or NULL
 				 * if none. The first numArgs entries in this
 				 * list describe the procedure's formal
 				 * arguments. */
-    CompiledLocal *lastLocalPtr;/* Pointer to the last allocated local
-				 * variable or NULL if none. This has frame
-				 * index (numCompiledLocals-1). */
+    CompiledLocal *lastLocalPtr; /* Pointer to the last allocated local
+				                  * variable or NULL if none. This has frame
+				                  * index (numCompiledLocals-1). */
 } Proc;
 
 /*
@@ -906,12 +906,12 @@ typedef void (*ProcErrorProc)(Tcl_Interp *interp, Tcl_Obj *procNameObj);
  */
 
 typedef struct Trace {
-    int level;			/* Only trace commands at nesting level less
+    int level;	/* Only trace commands at nesting level less
 				 * than or equal to this. */
     Tcl_CmdObjTraceProc *proc;	/* Procedure to call to trace command. */
     ClientData clientData;	/* Arbitrary value to pass to proc. */
     struct Trace *nextPtr;	/* Next in list of traces for this interp. */
-    int flags;			/* Flags governing the trace - see
+    int flags;	/* Flags governing the trace - see
 				 * Tcl_CreateObjTrace for details. */
     Tcl_CmdObjTraceDeleteProc *delProc;
 				/* Procedure to call when trace is deleted. */
@@ -929,12 +929,12 @@ typedef struct ActiveInterpTrace {
     struct ActiveInterpTrace *nextPtr;
 				/* Next in list of all active command traces
 				 * for the interpreter, or NULL if no more. */
-    Trace *nextTracePtr;	/* Next trace to check after current trace
-				 * procedure returns; if this trace gets
-				 * deleted, must update pointer to avoid using
-				 * free'd memory. */
-    int reverseScan;		/* Boolean set true when traces are scanning
-				 * in reverse order. */
+    Trace *nextTracePtr; /* Next trace to check after current trace
+				          * procedure returns; if this trace gets
+				          * deleted, must update pointer to avoid using
+				          * free'd memory. */
+    int reverseScan; /* Boolean set true when traces are scanning
+				      * in reverse order. */
 } ActiveInterpTrace;
 
 /*
@@ -1847,35 +1847,35 @@ typedef struct Interp {
 				 * do NOT rewrite this.) NULL if we are not
 				 * processing an ensemble. */
 	int numRemovedObjs;	/* How many arguments have been stripped off
-				 * because of ensemble processing. */
-	int numInsertedObjs;	/* How many of the current arguments were
-				 * inserted by an ensemble. */
+				         * because of ensemble processing. */
+	int numInsertedObjs; /* How many of the current arguments were
+				          * inserted by an ensemble. */
     } ensembleRewrite;
 
     /*
      * TIP #219: Global info for the I/O system.
      */
 
-    Tcl_Obj *chanMsg;		/* Error message set by channel drivers, for
-				 * the propagation of arbitrary Tcl errors.
-				 * This information, if present (chanMsg not
-				 * NULL), takes precedence over a POSIX error
-				 * code returned by a channel operation. */
+    Tcl_Obj *chanMsg; /* Error message set by channel drivers, for
+				       * the propagation of arbitrary Tcl errors.
+				       * This information, if present (chanMsg not
+				       * NULL), takes precedence over a POSIX error
+				       * code returned by a channel operation. */
 
     /*
      * Source code origin information (TIP #280).
      */
 
-    CmdFrame *cmdFramePtr;	/* Points to the command frame containing the
-				 * location information for the current
-				 * command. */
+    CmdFrame *cmdFramePtr; /* Points to the command frame containing the
+				            * location information for the current
+				            * command. */
     const CmdFrame *invokeCmdFramePtr;
 				/* Points to the command frame which is the
 				 * invoking context of the bytecode compiler.
 				 * NULL when the byte code compiler is not
 				 * active. */
-    int invokeWord;		/* Index of the word in the command which
-				 * is getting compiled. */
+    int invokeWord;	/* Index of the word in the command which
+				     * is getting compiled. */
     Tcl_HashTable *linePBodyPtr;/* This table remembers for each statically
 				 * defined procedure the location information
 				 * for its body. It is keyed by the address of
@@ -1901,15 +1901,15 @@ typedef struct Interp {
 				 * invoking command. Alt view: An index to the
 				 * CmdFrame stack keyed by command argument
 				 * holders. */
-    ContLineLoc *scriptCLLocPtr;/* This table points to the location data for
-				 * invisible continuation lines in the script,
-				 * if any. This pointer is set by the function
-				 * TclEvalObjEx() in file "tclBasic.c", and
-				 * used by function ...() in the same file.
-				 * It does for the eval/direct path of script
-				 * execution what CompileEnv.clLoc does for
-				 * the bytecode compiler.
-				 */
+    ContLineLoc *scriptCLLocPtr; /* This table points to the location data for
+				                  * invisible continuation lines in the script,
+				                  * if any. This pointer is set by the function
+				                  * TclEvalObjEx() in file "tclBasic.c", and
+								  * used by function ...() in the same file.
+				                  * It does for the eval/direct path of script
+				                  * execution what CompileEnv.clLoc does for
+				                  * the bytecode compiler.
+				                  */
     /*
      * TIP #268. The currently active selection mode, i.e. the package require
      * preferences.
@@ -1921,10 +1921,10 @@ typedef struct Interp {
      * Hashtables for variable traces and searches.
      */
 
-    Tcl_HashTable varTraces;	/* Hashtable holding the start of a variable's
-				 * active trace list; varPtr is the key. */
-    Tcl_HashTable varSearches;	/* Hashtable holding the start of a variable's
-				 * active searches list; varPtr is the key. */
+    Tcl_HashTable varTraces; /* Hashtable holding the start of a variable's
+				              * active trace list; varPtr is the key. */
+    Tcl_HashTable varSearches; /* Hashtable holding the start of a variable's
+				                * active searches list; varPtr is the key. */
     /*
      * The thread-specific data ekeko: cache pointers or values that
      *  (a) do not change during the thread's lifetime
@@ -1939,17 +1939,16 @@ typedef struct Interp {
      */
 
     void *allocCache;
-    void *pendingObjDataPtr;	/* Pointer to the Cache and PendingObjData
-				 * structs for this interp's thread; see
-				 * tclObj.c and tclThreadAlloc.c */
-    int *asyncReadyPtr;		/* Pointer to the asyncReady indicator for
-				 * this interp's thread; see tclAsync.c */
-    int *stackBound;		/* Pointer to the limit stack address
-				 * allowable for invoking a new command
-				 * without "risking" a C-stack overflow; see
-				 * TclpCheckStackSpace in the platform's
-				 * directory. */
-
+    void *pendingObjDataPtr; /* Pointer to the Cache and PendingObjData
+				              * structs for this interp's thread; see
+				              * tclObj.c and tclThreadAlloc.c */
+    int *asyncReadyPtr;	/* Pointer to the asyncReady indicator for
+				         * this interp's thread; see tclAsync.c */
+    int *stackBound; /* Pointer to the limit stack address
+				      * allowable for invoking a new command
+				      * without "risking" a C-stack overflow; see
+				      * TclpCheckStackSpace in the platform's
+				      * directory. */
 
 #ifdef TCL_COMPILE_STATS
     /*
@@ -2022,31 +2021,31 @@ typedef struct InterpList {
 /*
  * Flag bits for Interp structures:
  *
- * DELETED:		Non-zero means the interpreter has been deleted:
+ * DELETED:	Non-zero means the interpreter has been deleted:
  *			do NOT process any more commands for it, and destroy
  *			the structure as soon as all nested invocations of
  *			Tcl_Eval are done.
  * ERR_ALREADY_LOGGED:	Non-zero means information has already been logged in
- *			iPtr->errorInfo for the current Tcl_Eval instance, so
- *			Tcl_Eval need NOT log it (used to implement the "error
- *			message log" command).
+ *			            iPtr->errorInfo for the current Tcl_Eval instance, so
+ *			            Tcl_Eval need NOT log it (used to implement the "error
+ *			            message log" command).
  * DONT_COMPILE_CMDS_INLINE: Non-zero means that the bytecode compiler should
- *			not compile any commands into an inline sequence of
- *			instructions. This is set 1, for example, when command
- *			traces are requested.
+ *			                 not compile any commands into an inline sequence of
+ *			                 instructions. This is set 1, for example, when command
+ *			                 traces are requested.
  * RAND_SEED_INITIALIZED: Non-zero means that the randSeed value of the interp
- *			has not be initialized. This is set 1 when we first
- *			use the rand() or srand() functions.
- * SAFE_INTERP:		Non zero means that the current interp is a safe
- *			interp (i.e. it has only the safe commands installed,
- *			less priviledge than a regular interp).
+ *			              has not be initialized. This is set 1 when we first
+ *			              use the rand() or srand() functions.
+ * SAFE_INTERP: Non zero means that the current interp is a safe
+ *			    interp (i.e. it has only the safe commands installed,
+ *			    less priviledge than a regular interp).
  * INTERP_TRACE_IN_PROGRESS: Non-zero means that an interp trace is currently
- *			active; so no further trace callbacks should be
- *			invoked.
- * INTERP_ALTERNATE_WRONG_ARGS: Used for listing second and subsequent forms
- *			of the wrong-num-args string in Tcl_WrongNumArgs.
- *			Makes it append instead of replacing and uses
- *			different intermediate text.
+ *			                 active; so no further trace callbacks should be
+ *			                 invoked.
+ * INTERP_ALTERNATE_WRONG_ARGS: Used for listing second and subsequent forms of
+ *			                    the wrong-num-args string in Tcl_WrongNumArgs.
+ *			                    Makes it append instead of replacing and uses
+ *			                    different intermediate text.
  *
  * WARNING: For the sake of some extensions that have made use of former
  * internal values, do not re-use the flag values 2 (formerly ERR_IN_PROGRESS)
@@ -2074,14 +2073,14 @@ typedef struct InterpList {
  */
 
 struct LimitHandler {
-    int flags;			/* The state of this particular handler. */ 
+    int flags;			/* The state of this particular handler. */
     Tcl_LimitHandlerProc *handlerProc;
 				/* The handler callback. */
     ClientData clientData;	/* Opaque argument to the handler callback. */
     Tcl_LimitHandlerDeleteProc *deleteProc;
 				/* How to delete the clientData. */
-    LimitHandler *prevPtr;	/* Previous item in linked list of
-				 * handlers. */
+    LimitHandler *prevPtr; /* Previous item in linked list of
+				            * handlers. */
     LimitHandler *nextPtr;	/* Next item in linked list of handlers. */
 };
 
@@ -2162,15 +2161,15 @@ typedef enum TclEolTranslation {
  * Flags for TclInvoke:
  *
  * TCL_INVOKE_HIDDEN		Invoke a hidden command; if not set, invokes
- *				an exposed command.
+ *				            an exposed command.
  * TCL_INVOKE_NO_UNKNOWN	If set, "unknown" is not invoked if the
- *				command to be invoked is not found. Only has
- *				an effect if invoking an exposed command,
- *				i.e. if TCL_INVOKE_HIDDEN is not also set.
+ *				            command to be invoked is not found. Only has
+ *				            an effect if invoking an exposed command,
+ *				            i.e. if TCL_INVOKE_HIDDEN is not also set.
  * TCL_INVOKE_NO_TRACEBACK	Does not record traceback information if the
- *				invoked command returns an error. Used if the
- *				caller plans on recording its own traceback
- *				information.
+ *				            invoked command returns an error. Used if the
+ *				            caller plans on recording its own traceback
+ *				            information.
  */
 
 #define	TCL_INVOKE_HIDDEN	(1<<0)
@@ -2189,12 +2188,12 @@ typedef struct List {
     int refCount;
     int maxElemCount;		/* Total number of element array slots. */
     int elemCount;		/* Current number of list elements. */
-    int canonicalFlag;		/* Set if the string representation was
-				 * derived from the list representation. May
-				 * be ignored if there is no string rep at
-				 * all.*/
-    Tcl_Obj *elements;		/* First list element; the struct is grown to
-				 * accomodate all elements. */
+    int canonicalFlag; /* Set if the string representation was
+				        * derived from the list representation. May
+				        * be ignored if there is no string rep at
+				        * all. */
+    Tcl_Obj *elements; /* First list element; the struct is grown to
+				        * accomodate all elements. */
 } List;
 
 /*
@@ -2306,8 +2305,8 @@ typedef int (TclSetFileAttrProc)(Tcl_Interp *interp, int objIndex,
 	Tcl_Obj *fileName, Tcl_Obj *attrObjPtr);
 
 typedef struct TclFileAttrProcs {
-    TclGetFileAttrProc *getProc;/* The procedure for getting attrs. */
-    TclSetFileAttrProc *setProc;/* The procedure for setting attrs. */
+    TclGetFileAttrProc *getProc; /* The procedure for getting attrs. */
+    TclSetFileAttrProc *setProc; /* The procedure for setting attrs. */
 } TclFileAttrProcs;
 
 /*
@@ -2372,20 +2371,20 @@ typedef void (TclInitProcessGlobalValueProc)(char **valuePtr, int *lengthPtr,
  */
 
 typedef struct ProcessGlobalValue {
-    int epoch;			/* Epoch counter to detect changes in the
+    int epoch;	/* Epoch counter to detect changes in the
 				 * master value. */
     int numBytes;		/* Length of the master string. */
     char *value;		/* The master string value. */
     Tcl_Encoding encoding;	/* system encoding when master string was
-				 * initialized. */
+				             * initialized. */
     TclInitProcessGlobalValueProc *proc;
     				/* A procedure to initialize the master string
-				 * copy when a "get" request comes in before
-				 * any "set" request has been received. */
-    Tcl_Mutex mutex;		/* Enforce orderly access from multiple
-				 * threads. */
-    Tcl_ThreadDataKey key;	/* Key for per-thread data holding the
-				 * (Tcl_Obj) copy for each thread. */
+				     * copy when a "get" request comes in before
+				     * any "set" request has been received. */
+    Tcl_Mutex mutex; /* Enforce orderly access from multiple
+				      * threads. */
+    Tcl_ThreadDataKey key; /* Key for per-thread data holding the
+				            * (Tcl_Obj) copy for each thread. */
 } ProcessGlobalValue;
 
 /*
@@ -3956,7 +3955,11 @@ MODULE_SCOPE void	TclBNInitBignumFromWideUInt(mp_int *bignum,
 
 #include "tclIntDecls.h"
 #include "tclIntPlatDecls.h"
-#include "tclTomMathDecls.h"
+#ifdef HAVE_TCLTOMMATHDECLS_H
+# include <tclTomMathDecls.h>
+#else
+# warning we would include a local copy of "tclTomMathDecls.h" here, but we do not have one.
+#endif /* HAVE_TCLTOMMATHDECLS_H */
 
 #endif /* _TCLINT */
 
