@@ -1,11 +1,11 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                               -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
 AC_INIT([tcLex],[1.2a1],[frederic.bonnet@ciril.fr])
 AC_CONFIG_SRCDIR([tcLex.c])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIR([m4])dnl
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -46,34 +46,70 @@ fi
 
 # Checks for programs.
 AC_DEFUN([AC_REQUIRE_COMPILER],[
-  AC_REQUIRE([AM_PROG_AS])
-  AC_REQUIRE([AC_PROG_CC])
-  AC_REQUIRE([AC_PROG_CC_C_O])
-  AC_REQUIRE([AC_PROG_INSTALL])
-  AC_REQUIRE([AC_PROG_MAKE_SET])
-])
+  AC_REQUIRE([AM_PROG_AS])dnl
+  AC_REQUIRE([AC_PROG_CC])dnl
+  AC_REQUIRE([AC_PROG_CC_C_O])dnl
+  AC_REQUIRE([AC_PROG_INSTALL])dnl
+  AC_REQUIRE([AC_PROG_MAKE_SET])dnl
+])dnl
 AC_REQUIRE_COMPILER
 AM_PROG_LEX
 AC_PROG_YACC
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-ltcl':
-AC_CHECK_LIB([tcl],[main])
+AC_CHECK_LIB([tcl],[main])dnl
 
 file=${exec_prefix}/lib/tclConfig.sh
+if test ! -e ${file}; then
+  AC_MSG_WARN([${file} not found; trying to find a different tclConfig.sh...])
+  ## TODO: might want to use some sort of looping here to try all possibilities,
+  ## and then choose the best one:
+  if test "x${prefix}" != "x${exec_prefix}"; then
+    file=${prefix}/lib/tclConfig.sh
+  elif test -x "`which locate`"; then
+    AC_MSG_NOTICE([attempting to use locate to find tclConfig.sh])
+    file="`locate /tclConfig.sh | head -n 1`";
+  elif test -x "`which glocate`"; then
+    AC_MSG_NOTICE([attempting to use glocate to find tclConfig.sh])
+    file="`glocate /tclConfig.sh | head -n 1`";
+  elif test -x "`which mlocate`"; then
+    AC_MSG_NOTICE([attempting to use mlocate to find tclConfig.sh])
+    file="`mlocate /tclConfig.sh | head -n 1`";
+  elif test -x "`which plocate`"; then
+    AC_MSG_NOTICE([attempting to use plocate to find tclConfig.sh])
+    file="`plocate /tclConfig.sh | head -n 1`";
+  elif test -x "`which mdfind`"; then
+    AC_MSG_NOTICE([attempting to use mdfind to find tclConfig.sh])
+    file="`mdfind -name /tclConfig.sh | head -n 1`";
+  elif test -x "`which find`"; then
+    AC_MSG_WARN([attempting to use find to find tclConfig.sh; this may take awhile...])
+    if test -d "${exec_prefix}"; then
+      file="`find ${exec_prefix} -name /tclConfig.sh -print 2>/dev/null | head -n 1`";
+    elif test -d "${prefix}"; then
+      file="`find ${prefix} -name /tclConfig.sh -print 2>/dev/null | head -n 1`";
+    else
+      file="`find / -name /tclConfig.sh -print 2>/dev/null | head -n 1`";
+    fi
+  else
+    file=/dev/null
+  fi
+fi
 AC_MSG_NOTICE([sourcing ${file}])
 . ${file}
 
 CC=${TCL_CC}
 
 # Check for header files.
-if test "x" = "y"; then
+if test "x0" = "Y1" && test -x "`which autoscan`"; then
   dnl# keep autoscan happy
-  AC_CHECK_HEADERS([float.h limits.h net/errno.h sys/param.h values.h])
+  AC_CHECK_HEADERS([float.h inttypes.h limits.h net/errno.h stdint.h sys/param.h \
+                    unistd.h values.h])
   AC_HEADER_SYS_WAIT
 else
   dnl# these should already be cached so only check once
-  AC_CHECK_HEADERS_ONCE([float.h limits.h net/errno.h sys/param.h values.h])
+  AC_CHECK_HEADERS_ONCE([float.h inttypes.h limits.h net/errno.h stdint.h \
+                         sys/param.h unistd.h values.h])
   if test "x${ac_cv_header_stdc}" = "x"; then
     test -z "${ac_cv_header_stdc}"
     AC_HEADER_STDC
@@ -107,23 +143,24 @@ AC_TYPE_UINTPTR_T
 AC_TYPE_UID_T
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
-AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_TYPES([ptrdiff_t])dnl
 
 # Checks for library functions.
-AC_CHECK_FUNCS([gettimeofday])
+AC_CHECK_FUNCS([gettimeofday])dnl
 
-AC_SUBST([CC])
-AC_SUBST([INSTALL])
-AC_SUBST([INSTALL_PROGRAM])
-AC_SUBST([INSTALL_DATA])
-AC_SUBST([TCL_SHLIB_CFLAGS])
-AC_SUBST([TCL_SHLIB_SUFFIX])
-AC_SUBST([TCL_SHLIB_LD])
-AC_SUBST([TCL_PREFIX])
-AC_SUBST([TCL_EXEC_PREFIX])
-AC_SUBST([TCL_CFLAGS])
-AC_SUBST([TCL_DEFS])
-AC_SUBST([TCL_SRC_DIR])
+# Output.
+AC_SUBST([CC])dnl
+AC_SUBST([INSTALL])dnl
+AC_SUBST([INSTALL_PROGRAM])dnl
+AC_SUBST([INSTALL_DATA])dnl
+AC_SUBST([TCL_SHLIB_CFLAGS])dnl
+AC_SUBST([TCL_SHLIB_SUFFIX])dnl
+AC_SUBST([TCL_SHLIB_LD])dnl
+AC_SUBST([TCL_PREFIX])dnl
+AC_SUBST([TCL_EXEC_PREFIX])dnl
+AC_SUBST([TCL_CFLAGS])dnl
+AC_SUBST([TCL_DEFS])dnl
+AC_SUBST([TCL_SRC_DIR])dnl
 
-AC_CONFIG_FILES([Makefile Makefile.orig])
+AC_CONFIG_FILES([Makefile Makefile_orig])
 AC_OUTPUT

@@ -11,7 +11,7 @@ conftest*
 Makefile
 core
 pkgIndex.tcl
-Makefile.orig
+Makefile*orig
 tcLex.dylib
 TAGS
 ID
