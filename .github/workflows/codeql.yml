@@ -69,7 +69,7 @@ jobs:
         run: |
           sudo apt-get -qq update
           sudo apt-get -y install libc6-dev-amd64-cross libgcc-s1-amd64-cross \
-            tcl-dev tcl-tclex
+            tcl-dev tcl-tclex libfl-dev tclx8.4-dev
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
