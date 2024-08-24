@@ -1,1 +1,10 @@
 *.p linguist-language=Pascal
+aclocal.m4 linguist-generated
+compile linguist-vendored
+config.h.in linguist-generated
+configure linguist-generated
+configure.scan linguist-generated
+COPYING linguist-vendored
+INSTALL linguist-vendored
+install-sh linguist-vendored
+missing linguist-vendored

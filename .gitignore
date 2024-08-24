@@ -4,9 +4,11 @@
 *.cache
 *.log
 */stamp-h*
+stamp-h*
 *.status
 */config.h
 confdefs.h
+config.h
 conftest*
 Makefile
 core
