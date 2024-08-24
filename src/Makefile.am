@@ -77,7 +77,7 @@ clean-local:
 	rm -f *.o core pkgIndex.tcl
 
 distclean-local: clean-local
-	rm -f Makefile config.status $(DLL)
+	rm -f config.status $(DLL)
 	-rm -rf autom4te.cache || rmdir autom4te.cache || unlink autom4te.cache
 
 DISTCLEANFILES = Makefile.orig *~ autoscan.log
