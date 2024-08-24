@@ -57,8 +57,7 @@ AM_PROG_LEX
 AC_PROG_YACC
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-ltcl':
-AC_CHECK_LIB([tcl],[main])dnl
+AC_CHECK_LIB([tcl],[TclBNInitBignumFromLong])dnl
 
 file=${exec_prefix}/lib/tclConfig.sh
 if test ! -e ${file}; then
@@ -111,7 +110,7 @@ else
   AC_CHECK_HEADERS_ONCE([float.h inttypes.h limits.h net/errno.h stdint.h \
                          sys/param.h unistd.h values.h])
   if test "x${ac_cv_header_stdc}" = "x"; then
-    test -z "${ac_cv_header_stdc}"
+    test -z "${ac_cv_header_stdc}" || unset ac_cv_header_stdc
     AC_HEADER_STDC
   fi
 fi
@@ -128,10 +127,10 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h pwd.h \
                   Tcl/tclIntPlatDecls.h Tcl/tcl-private/tclIntPlatDecls.h \
                   tclRegexp.h tclTomMathDecls.h utime.h])
 if test "x${HAVE_TCLINT_H}" = "x" -a "x${ac_cv_header_tclInt_h}" = "xno"; then
-	AC_MSG_WARN([tclInt.h not found, compilation will most likely fail without it])
+  AC_MSG_WARN([tclInt.h not found, compilation will most likely fail without it])
 fi
 if test "x${HAVE_TCLREGEXP_H}" = "x" -a "x${ac_cv_header_tclRegexp_h}" = "xno"; then
-	AC_MSG_WARN([tclRegexp.h not found, compilation will most likely fail without it])
+  AC_MSG_WARN([tclRegexp.h missing, compilation will most likely fail without it])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.

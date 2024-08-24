@@ -62,7 +62,7 @@ tcLexRE.o: tcLexRE.c tcLex.h tcLexRE.h tclInt.h RE80.c RE81.c RE82.c
 pkgIndex.tcl:
 	(if test -f $(PROJECTDIR)/pkgIndex.tcl; \
 	    then grep -v $(PROJECT_VERSION) $(PROJECTDIR)/pkgIndex.tcl; \
-	else true; fi;) | \
+	else echo "warning: missing $(PROJECTDIR)/pkgIndex.tcl"; fi;) | \
 	echo 'package ifneeded $(PROJECT) $(PROJECT_VERSION) [list load [file join $$dir $(DLL).$(PROJECT_VERSION)] $(PROJECT)]' > pkgIndex.tcl
 
 install_tclex: all
@@ -71,15 +71,16 @@ install_tclex: all
 	$(INSTALL_DATA) pkgIndex.tcl $(PROJECTDIR)/pkgIndex.tcl
 
 test: all
-	true
+	@echo "TODO: implement the test target"
 
 clean-local: 
 	rm -f *.o core pkgIndex.tcl
 
 distclean-local: clean-local
 	rm -f Makefile config.status $(DLL)
+	-rm -rf autom4te.cache || rmdir autom4te.cache || unlink autom4te.cache
 
-DISTCLEANFILES = Makefile.orig
+DISTCLEANFILES = Makefile.orig *~ autoscan.log
 
 # Hack: these should not be treated as targets in the first place:
 .PHONY: -c -m 644

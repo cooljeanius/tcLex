@@ -1,0 +1,6 @@
+aclocal.m4 linguist-generated
+config.guess linguist-vendored
+config.sub linguist-vendored
+configure linguist-generated
+configure.scan linguist-generated
+install-sh linguist-vendored
