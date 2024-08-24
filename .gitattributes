@@ -1,3 +1,4 @@
+*.l linguist-language=Lex
 *.p linguist-language=Pascal
 aclocal.m4 linguist-generated
 compile linguist-vendored
