@@ -49,9 +49,13 @@
 #if defined(HAVE_NET_ERRNO_H) || __has_include(<net/errno.h>)
 # include <net/errno.h>
 #else
-# if defined(__GNUC__) && !defined(__APPLE__)
-#  warning "tclUnixPort.h expects <net/errno.h> to be included."
-# endif /* __GNUC__ && !__APPLE__ */
+# if defined(HAVE_MSVCRT_ERRNO_H) || __has_include(<msvcrt/errno.h>)
+#  include <msvcrt/errno.h>
+# else
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__APPLE__)
+#   warning "tclUnixPort.h expects <net/errno.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ && !__APPLE__ */
+# endif /* HAVE_MSVCRT_ERRNO_H */
 #endif /* HAVE_NET_ERRNO_H */
 #include <pwd.h>
 #include <signal.h>

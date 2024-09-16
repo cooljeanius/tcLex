@@ -116,9 +116,9 @@ else
 fi
 AC_HEADER_DIRENT
 AC_HEADER_TIME
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h pwd.h \
-                  signal.h stdarg.h stddef.h stdio.h sys/file.h sys/socket.h \
-                  sys/time.h tclInt.h Tcl/tclInt.h \
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h msvcrt/errno.h netdb.h netinet/in.h \
+                  pwd.h signal.h stdarg.h stddef.h stdio.h sys/file.h \
+                  sys/socket.h sys/time.h tclInt.h Tcl/tclInt.h \
                   Tcl/tcl-private/tclInt.h tclPort.h Tcl/tclPort.h \
                   Tcl/tcl-private/tclPort.h tclUnixPort.h \
                   Tcl/tclUnixPort.h Tcl/tcl-private/tclUnixPort.h \

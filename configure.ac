@@ -10,6 +10,9 @@ AC_CONFIG_HEADERS([config.h])dnl
 AC_PROG_CC
 AM_INIT_AUTOMAKE([1.13 foreign])dnl
 
+# Check for header files.
+AC_CHECK_HEADERS([net/errno.h msvcrt/errno.h])dnl
+
 # Output.
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([src])
