@@ -33,6 +33,10 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#ifndef __has_include
+# define __has_include(foo) 0
+#endif /* !__has_include */
+
 /*
  *---------------------------------------------------------------------------
  * The following sets of #includes and #ifdefs are required to get Tcl to
@@ -42,29 +46,31 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#ifdef HAVE_NET_ERRNO_H
-#   include <net/errno.h>
+#if defined(HAVE_NET_ERRNO_H) || __has_include(<net/errno.h>)
+# include <net/errno.h>
 #else
-#  if defined(__GNUC__) && !defined(__APPLE__)
-#    warning tclUnixPort.h expects <net/errno.h> to be included.
-#  endif /* __GNUC__ && !__APPLE__ */
+# if defined(__GNUC__) && !defined(__APPLE__)
+#  warning "tclUnixPort.h expects <net/errno.h> to be included."
+# endif /* __GNUC__ && !__APPLE__ */
 #endif /* HAVE_NET_ERRNO_H */
 #include <pwd.h>
 #include <signal.h>
-#ifdef HAVE_SYS_PARAM_H
-#   include <sys/param.h>
+#if defined(HAVE_SYS_PARAM_H) || __has_include(<sys/param.h>)
+# include <sys/param.h>
 #else
-#   warning tclUnixPort.h expects <sys/param.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "tclUnixPort.h expects <sys/param.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_PARAM_H */
 #include <sys/types.h>
 #ifdef USE_DIRENT2_H
-#  include "../compat/dirent2.h"
+# include "../compat/dirent2.h"
 #else
-#  if defined(NO_DIRENT_H) && !defined(HAVE_DIRENT_H)
-#    include "../compat/dirent.h"
-#  elif defined HAVE_DIRENT_H
-#    include <dirent.h>
-#  endif /* NO_DIRENT_H && !HAVE_DIRENT_H */
+# if defined(NO_DIRENT_H) && !defined(HAVE_DIRENT_H)
+#  include "../compat/dirent.h"
+# elif defined HAVE_DIRENT_H
+#  include <dirent.h>
+# endif /* NO_DIRENT_H && !HAVE_DIRENT_H */
 #endif /* USE_DIRENT2_H */
 
 #ifdef HAVE_STRUCT_DIRENT64
