@@ -88,6 +88,11 @@ jobs:
           # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
 
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+        env:
+          MAKEFLAGS: "-ki"
+
       # If the analyze step fails for 1 of the languages you are analyzing with
       # "We were unable to automatically build your code", modify the matrix
       # above to set the build mode to "manual" for that language. Then modify
